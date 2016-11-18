@@ -1,0 +1,3 @@
+M. N. O. Sakidu, Numerical  Techniques  in  Electromagnetics, 2nd ed.    Boca Raton, Fl:  CRC Press, 2001.
+
+http://www.ece.utah.edu/~ece6340/LECTURES/Feb1/Nagel%202012%20-%20Solving%20the%20Generalized%20Poisson%20Equation%20using%20FDM.pdf

@@ -4,16 +4,20 @@
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_blas.h>
 #include "backgroundfunctions.h"
+#include "sor.h"
 
 
-void writeFile(double* array){
+void writeFile(double** array, int nx, int ny){
    FILE *f = fopen("./file.txt", "w");
    if (f == NULL) {
       printf("Error opening file.");
       exit(1);
    }
-   for (int i; i < length(array); i++) {
-      fprintf(f, "%f\n", array[i]);
+   for (int i; i < nx; i++) {
+      for (int j = 0; j < ny; j++) {
+         fprintf(f, "%f ", array[i][j]);
+      }
+      fprintf(f, "\n");
    }
    fclose(f);
 }
@@ -33,26 +37,23 @@ double* foo(int n) {
 }
 
 int main(int argc, char **argv) {
-   int n;
-   if (argc > 1) {
-      n = atoi(argv[1]);
-   } else {
-      n = 1;
+   int nx = 1000;
+   int ny = 1000;
+   double** V = create2DArray(nx,ny);
+   double** boolarr = create2DArray(nx,ny);
+   for (int i = 1; i < nx - 1; i++) {
+      boolarr[i][0] = 1;
+      boolarr[i][ny-1] = 1;
    }
-   double v_dbl_i[] = {1.0,3.0,-2.0};
-   double v_dbl_ii[] = {5.0,-1.2,0.5};
-   int vector_length = 3;
-   gsl_vector* v_i = gsl_vector_calloc(vector_length);
-   gsl_vector* v_ii = gsl_vector_calloc(vector_length);
-   for (int i = 0; i < vector_length; i++) {
-      gsl_vector_set(v_i,i,v_dbl_i[i]);
-      gsl_vector_set(v_ii,i,v_dbl_ii[i]);
+   for (int i = 0; i < ny; i++) {
+      boolarr[0][i] = 1;
+      boolarr[nx-1][i] = 1;
+      V[0][i] = 1;
    }
-
-   double x;
-   gsl_blas_ddot(v_i,v_ii,&x);
-   gsl_vector_free(v_i);
-   gsl_vector_free(v_ii);
-   printf("%f\n", x);
+   printf("%s\n", "Grid built, running algorithm...");
+   V = sor(V,boolarr,nx,ny,1e-3);
+   printf("%s\n", "Algorithm complete. Writing to file...");
+   writeFile(V,nx,ny);
+   free(V);
    return 0;
 }

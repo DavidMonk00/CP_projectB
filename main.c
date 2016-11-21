@@ -22,23 +22,17 @@ void writeFile(double** array, int nx, int ny){
    fclose(f);
 }
 
-char* doubleToChar(double a) {
-   static char arr[sizeof(a)];
-   memcpy(&arr,&a,sizeof(a));
-   return arr;
-}
-
-double* foo(int n) {
-   double* array = create1DArray(n);
-   for (int i = 0; i < n; i++){
-      array[i] = i;
-   }
-   return array;
-}
-
 int main(int argc, char **argv) {
-   int nx = 1000;
-   int ny = 1000;
+   int nx;
+   int ny;
+   if (argc > 1) {
+      nx = atoi(argv[1]);
+      ny = atoi(argv[2]);
+
+   } else {
+      nx = 100;
+      ny = 100;
+   }
    double** V = create2DArray(nx,ny);
    double** boolarr = create2DArray(nx,ny);
    for (int i = 1; i < nx - 1; i++) {
@@ -48,12 +42,20 @@ int main(int argc, char **argv) {
    for (int i = 0; i < ny; i++) {
       boolarr[0][i] = 1;
       boolarr[nx-1][i] = 1;
-      V[0][i] = 1;
    }
+   V[nx/2][ny/2] = 1;
+   boolarr[nx/2][ny/2] = 1;
+   V[nx/2 + 1][ny/2] = 1;
+   boolarr[nx/2 + 1][ny/2] = 1;
+   V[nx/2][ny/2 + 1] = 1;
+   boolarr[nx/2][ny/2 + 1] = 1;
+   V[nx/2 + 1][ny/2 + 1] = 1;
+   boolarr[nx/2 + 1][ny/2 + 1] = 1;
    printf("%s\n", "Grid built, running algorithm...");
-   V = sor(V,boolarr,nx,ny,1e-3);
+   V = sor(V,boolarr,nx,ny,1e-5);
    printf("%s\n", "Algorithm complete. Writing to file...");
    writeFile(V,nx,ny);
    free(V);
+   free(boolarr);
    return 0;
 }

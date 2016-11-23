@@ -7,9 +7,10 @@ double** sor(double** V, double** boolarr, int nx, int ny, double tol) {
    double Rmax = 1;
    int N = 0;
    double R;
+   int i;
    while (Rmax > tol) {
       Rmax = 0;
-      for (int i = 0; i < nx; i++) {
+      for (i = 0; i < nx; i++) {
          for (int j = i%2; j < ny; j=j+2) {
             if (!boolarr[i][j]) {
                R = (V[i-1][j]+V[i+1][j]+V[i][j-1]+V[i][j+1])/4 - V[i][j];
@@ -20,7 +21,7 @@ double** sor(double** V, double** boolarr, int nx, int ny, double tol) {
             }
          }
       }
-      for (int i = 0; i < nx; i++) {
+      for (i = 0; i < nx; i++) {
          for (int j = (i+1)%2; j < ny; j=j+2) {
             if (!boolarr[i][j]) {
                R = (V[i-1][j]+V[i+1][j]+V[i][j-1]+V[i][j+1])/4 - V[i][j];

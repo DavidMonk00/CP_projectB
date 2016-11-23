@@ -5,3 +5,4 @@ V = np.loadtxt("file.txt", 'float64')
 
 plt.imshow(V,interpolation='nearest',cmap='hot')
 plt.show()
+    

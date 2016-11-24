@@ -13,8 +13,9 @@ void writeFile(double** array, int nx, int ny){
       printf("Error opening file.");
       exit(1);
    }
-   for (int i; i < nx; i++) {
-      for (int j = 0; j < ny; j++) {
+   int i; int j;
+   for (i = 0; i < nx; i++) {
+      for (j = 0; j < ny; j++) {
          fprintf(f, "%f ", array[i][j]);
       }
       fprintf(f, "\n");
@@ -35,11 +36,13 @@ int main(int argc, char **argv) {
    }
    double** V = create2DArray(nx,ny);
    double** boolarr = create2DArray(nx,ny);
-   for (int i = 1; i < nx - 1; i++) {
+
+   int i;
+   for (i = 1; i < nx - 1; i++) {
       boolarr[i][0] = 1;
       boolarr[i][ny-1] = 1;
    }
-   for (int i = 0; i < ny; i++) {
+   for (i = 0; i < ny; i++) {
       boolarr[0][i] = 1;
       boolarr[nx-1][i] = 1;
    }

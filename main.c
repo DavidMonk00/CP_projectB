@@ -4,7 +4,7 @@
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_blas.h>
 #include "backgroundfunctions.h"
-#include "sor.h"
+#include "sor_multi.h"
 
 
 void writeFile(double** array, int nx, int ny){
@@ -26,9 +26,11 @@ void writeFile(double** array, int nx, int ny){
 int main(int argc, char **argv) {
    int nx;
    int ny;
+   int cores;
    if (argc > 1) {
       nx = atoi(argv[1]);
       ny = atoi(argv[2]);
+      cores = atoi(argv[3]);
 
    } else {
       nx = 100;
@@ -55,7 +57,7 @@ int main(int argc, char **argv) {
    V[nx/2 + 1][ny/2 + 1] = 1;
    boolarr[nx/2 + 1][ny/2 + 1] = 1;
    printf("%s\n", "Grid built, running algorithm...");
-   V = sor(V,boolarr,nx,ny,1e-5);
+   V = sor(V,boolarr,nx,ny,1e-5,2);
    printf("%s\n", "Algorithm complete. Writing to file...");
    writeFile(V,nx,ny);
    free(V);

@@ -145,13 +145,10 @@ struct return_params sorIter(double** V, double** boolarr, int nx, int ny, int c
       int start_row = res->thread_id * res->rows + 1;
       int end_row = start_row + res->rows;
       retvals.V = addslice2DArrayRows(V,res->V,ny,start_row,end_row);
-      printf("Rmax was returned from thread %d as %f\n", res->thread_id, res->Rmax);
       if (res->Rmax > retvals.Rmax) {
-         printf("Rmax has increased t0: %f\n", res->Rmax);
          retvals.Rmax = res->Rmax;
       }
    }
-   printf("Returning Rmax = %f\n", retvals.Rmax);
    return retvals;
 }
 

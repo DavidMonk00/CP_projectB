@@ -1,6 +1,7 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "backgroundfunctions.h"
 #define NUM_THREADS 2
 
@@ -86,12 +87,18 @@ void* sorRowRed(void* threadarg) {
 
 int main() {
    double** arr = create2DArray(30,10);
+   printf("%ld\n", sizeof(arr));
    for (int i = 0; i < 30; i++) {
       for (int j = 0; j < 10; j++) {
          arr[i][j] = i + j;
       }
+      printf("%f\n", arr[i][0]);
    }
    double** slice = slice2DArrayRows(arr,10, 6, 10);
+   for (int i = 0; i < 4; i++) {
+      printf("%f\n", slice[i][0]);
+   }
+   printf("%ld\n", sizeof(slice));
    slice[1][2] = 103;
    //arr = addslice2DArrayRows(arr, slice,10, 1,4);
    printf("arr[7][2] = %f\n", arr[7][2]);

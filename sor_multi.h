@@ -159,7 +159,8 @@ double** sor(double** V, double** boolarr, int nx, int ny, double tol, int cores
    int N = 0;
    double R;
    int rc;
-   while (Rmax > tol) {
+   for (int k = 0; k < 4; k++) {
+   //while (Rmax > tol) {
       Rmax = 0;
       //RED Loop
       struct return_params retvals_red;

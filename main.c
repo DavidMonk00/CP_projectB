@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
    V[nx/2 + 1][ny/2 + 1] = 1;
    boolarr[nx/2 + 1][ny/2 + 1] = 1;
    printf("%s\n", "Grid built, running algorithm...");
-   V = sor(V,boolarr,nx,ny,1e-5,2);
+   V = sor(V,boolarr,nx,ny,1e-5,3);
    printf("%s\n", "Algorithm complete. Writing to file...");
    writeFile(V,nx,ny);
    free(V);

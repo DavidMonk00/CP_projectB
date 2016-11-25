@@ -33,7 +33,7 @@ void* sorRowRed(void* threadarg) {
    pthread_exit((void*)chunk);
 }
 
-int main(int argc, char const *argv[]) {
+/*int main(int argc, char const *argv[]) {
    pthread_t threads[NUM_THREADS];
    pthread_attr_t attr;
    int rc;
@@ -81,4 +81,18 @@ int main(int argc, char const *argv[]) {
       printf("%f\n", array[1][2]);
    }
    pthread_exit(NULL);
+}*/
+
+
+int main() {
+   double** arr = create2DArray(30,10);
+   for (int i = 0; i < 30; i++) {
+      for (int j = 0; j < 10; j++) {
+         arr[i][j] = i + j;
+      }
+   }
+   double** slice = slice2DArrayRows(arr,10, 6, 10);
+   slice[1][2] = 103;
+   //arr = addslice2DArrayRows(arr, slice,10, 1,4);
+   printf("arr[7][2] = %f\n", arr[7][2]);
 }

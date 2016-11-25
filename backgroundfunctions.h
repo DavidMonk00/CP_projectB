@@ -44,3 +44,20 @@ double* create1DArray(int columns) {
    array = malloc(columns*sizeof(double));
    return array;
 }
+
+double** slice2DArrayRows(double** array, int ny, int start_row, int end_row) {
+   int rows = end_row - start_row;
+   double** slice = create2DArray(rows, ny);
+   for (int i = 0; i < rows; i++) {
+      slice[i] = array[start_row + i];
+   }
+   return slice;
+}
+
+double** addslice2DArrayRows(double** array, double** slice, int ny, int start_row, int end_row) {
+   int rows = end_row - start_row;
+   for (int i = 0; i < rows; i++) {
+      array[start_row + i] = slice[i + 1];
+   }
+   return array;
+}

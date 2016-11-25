@@ -4,7 +4,7 @@
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_blas.h>
 #include "backgroundfunctions.h"
-#include "sor_multi.h"
+#include "sor.h"
 
 
 void writeFile(double** array, int nx, int ny){

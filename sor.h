@@ -1,24 +1,9 @@
 #include <math.h>
 #define PI 3.14159265358979323846
 
-typedef struct {
-   double** V;
-   double Rmax;
-} ReturnParams;
-
-typedef struct {
-   double** V;
-   double** boolarr;
-   int xStart;
-   int xEnd;
-   int ny;
-   double w;
-   int red;
-} InitParams;
-
 ReturnParams sorSlice(void* initparams) {
    InitParams* params = initparams;
-   double** V; double** boolarr;
+   double** V; int** boolarr;
    int xEnd; int xStart; int ny;
    double w; int red;
    V = params->V;
@@ -63,7 +48,7 @@ ReturnParams sorSlice(void* initparams) {
    return ret;
 }
 
-double** sor(double** V, double** boolarr, int nx, int ny, double tol, int cores) {
+double** sor(double** V, int** boolarr, int nx, int ny, double tol, int cores) {
    double t = cos(PI/nx) + cos(PI/ny);
    double w = (8-sqrt(64-16*t*t))/(t*t);
    double Rmax = 1;
@@ -129,12 +114,13 @@ double** sor(double** V, double** boolarr, int nx, int ny, double tol, int cores
          retvals_black[i] = sorSlice((void*)&initparams_black[i]);
       }
       for (i = 0; i < threads; i++) {
+
          if (retvals_black[i].Rmax > Rmax) {
             Rmax = retvals_black[i].Rmax;
          }
       }
       N++;
-      //printf("Rmax after interation %d = %f\n", N, Rmax);
+      printf("Rmax after interation %d = %f\n", N, Rmax);
    }
    printf("%d\n", N);
    return V;

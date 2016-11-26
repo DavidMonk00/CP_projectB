@@ -1,164 +1,136 @@
 #include <math.h>
 #include <pthread.h>
-#include <stdlib.h>
 #define PI 3.14159265358979323846
 
-struct thread_data{
-   int  thread_id;
-   int  rows;
-   int ny;
-   double** V;
-   double** boolarr;
-   double w;
-   double Rmax;
-};
+double temp_Rmax;
 
-struct return_params {
-   double** V;
-   double Rmax;
-};
+void* sorSlice(void* initparams) {
+   InitParams* params = initparams;
+   double** V; int** boolarr;
+   int xEnd; int xStart; int ny;
+   double w; int red;
+   V = params->V;
+   boolarr = params->boolarr;
+   xStart = params->xStart;
+   xEnd = params->xEnd;
+   ny = params->ny;
+   w = params->w;
+   red = params->red;
+   int yBound = ny - 1;
 
-void* sorRowRed(void* threadarg) {
-   struct thread_data* chunk = malloc(sizeof(struct thread_data));
-   chunk = (struct thread_data *) threadarg;
-   int taskid = chunk->thread_id;
-   int rows = chunk->rows;
-   int ny = chunk->ny;
-   double** V = chunk->V;
-   double** boolarr = chunk->boolarr;
-   double Rmax = chunk->Rmax;
-   double w = chunk->w;
-
-   //printf("%s\n", "Variables initialised, starting loop...");
-   int i; int j; double R;
-   for (i = 1; i < rows - 1; i++) {
-      for (int j = i%2; j < ny; j=j+2) {
-         //printf("i=%d, j=%d\n", i,j);
-         if (!boolarr[i][j]) {
-            //printf("%s\n", "Passed bool check");
-            R = (V[i-1][j]+V[i+1][j]+V[i][j-1]+V[i][j+1])/4 - V[i][j];
-            //printf("%s\n", "Calculated residual");
-            V[i][j] = V[i][j] + w*R;
-            if (R > Rmax) {
-               Rmax = R;
+   temp_Rmax = 0;
+   double R; int i; int j;
+   if (red){
+      for (i = xStart; i < xEnd; i++) {
+         for (int j = i%2; j < yBound; j=j+2) {
+            if (!boolarr[i][j]) {
+               R = (V[i-1][j]+V[i+1][j]+V[i][j-1]+V[i][j+1])/4 - V[i][j];
+               V[i][j] = V[i][j] + w*R;
+               if (R > temp_Rmax) {
+                  temp_Rmax = R;
+               }
+            }
+         }
+      }
+   } else {
+      for (i = xStart; i < xEnd; i++) {
+         for (j = (i+1)%2; j < yBound; j=j+2) {
+            if (!boolarr[i][j]) {
+               R = (V[i-1][j]+V[i+1][j]+V[i][j-1]+V[i][j+1])/4 - V[i][j];
+               V[i][j] = V[i][j] + w*R;
+               if (R > temp_Rmax) {
+                  temp_Rmax = R;
+               }
             }
          }
       }
    }
-   chunk->Rmax = Rmax;
-   //printf("Rmax_red after loop = %f\n", Rmax);
-   pthread_exit((void*)chunk);
+   //printf("%f\n", temp_Rmax);
+   pthread_exit(NULL);
 }
 
-void* sorRowBlack(void* threadarg) {
-   struct thread_data* chunk = malloc(sizeof(struct thread_data));
-   chunk = (struct thread_data *) threadarg;
-   int taskid = chunk->thread_id;
-   int rows = chunk->rows;
-   int ny = chunk->ny;
-   double** V = chunk->V;
-   double** boolarr = chunk->boolarr;
-   double Rmax = chunk->Rmax;
-   double w = chunk->w;
-
-   //printf("%s\n", "Variables initialised, starting loop...");
-   int i; int j; double R;
-   for (i = 1; i < rows - 1; i++) {
-      for (j = (i+1)%2; j < ny; j=j+2) {
-         if (!boolarr[i][j]) {
-            R = (V[i-1][j]+V[i+1][j]+V[i][j-1]+V[i][j+1])/4 - V[i][j];
-            V[i][j] = V[i][j] + w*R;
-            if (R > Rmax) {
-               Rmax = R;
-            }
-         }
-      }
-   }
-   chunk->Rmax = Rmax;
-   //printf("Rmax_black after loop = %f\n", Rmax);
-   pthread_exit((void*)chunk);
-}
-
-struct return_params sorIter(double** V, double** boolarr, int nx, int ny, int cores, int red){
-   int NUM_THREADS = cores;
-   struct thread_data thread_data_array[NUM_THREADS];
-   pthread_t threads[NUM_THREADS];
-   pthread_attr_t attr;
-   int rc;
-   long t;
-   pthread_attr_init(&attr);
-   pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
-   for (t = 0; t < NUM_THREADS; t++) {
-      thread_data_array[t].thread_id = t;
-      thread_data_array[t].w = 1.9;
-      thread_data_array[t].ny = ny;
-      thread_data_array[t].Rmax = 0;
-      if (t == 0){
-         int rows = nx/NUM_THREADS;
-         thread_data_array[t].rows = rows;
-         thread_data_array[t].V = slice2DArrayRows(V, ny, 0, rows+1);
-         thread_data_array[t].boolarr = slice2DArrayRows(V, ny, 0, rows+1);
-      } else if (t = NUM_THREADS-1){
-         int rows = nx/NUM_THREADS + nx%NUM_THREADS;
-         thread_data_array[t].rows = rows;
-         thread_data_array[t].V = slice2DArrayRows(V, ny, nx - rows - 1, nx);
-         thread_data_array[t].boolarr = slice2DArrayRows(V, ny, nx - rows - 1, nx);
-      } else {
-         int rows = nx/NUM_THREADS;
-         thread_data_array[t].rows = rows;
-         thread_data_array[t].V = slice2DArrayRows(V, ny, t*rows - 1, (t + 1)*rows+1);
-         thread_data_array[t].boolarr = slice2DArrayRows(V, ny, t*rows - 1, (t + 1)*rows+1);
-      }
-      if (red == 1) {
-         rc = pthread_create(&threads[t], &attr, sorRowRed, (void*)&thread_data_array[t]);
-      } else {
-         rc = pthread_create(&threads[t], &attr, sorRowBlack, (void*)&thread_data_array[t]);
-      }
-      if (rc) {
-         printf("Error\n");
-         exit(-1);
-      }
-   }
-
-   struct return_params retvals;
-   retvals.Rmax = 0;
-   for (t = 0; t < NUM_THREADS; t++) {
-      struct thread_data* res;
-      rc = pthread_join(threads[t], (void*)&res);
-      int start_row = res->thread_id * res->rows + 1;
-      int end_row = start_row + res->rows;
-      retvals.V = addslice2DArrayRows(V,res->V,ny,start_row,end_row);
-      if (res->Rmax > retvals.Rmax) {
-         retvals.Rmax = res->Rmax;
-      }
-   }
-   return retvals;
-}
-
-double** sor(double** V, double** boolarr, int nx, int ny, double tol, int cores) {
+double** sor(double** V, int** boolarr, int nx, int ny, double tol, int cores) {
    double t = cos(PI/nx) + cos(PI/ny);
    double w = (8-sqrt(64-16*t*t))/(t*t);
    double Rmax = 1;
    int N = 0;
-   double R;
-   int rc;
-   for (int k = 0; k < 4; k++) {
-   //while (Rmax > tol) {
-      Rmax = 0;
-      //RED Loop
-      struct return_params retvals_red;
-      retvals_red = sorIter(V,boolarr,nx,ny,cores,1);
-      //BLACK Loop
-      struct return_params retvals_black;
-      retvals_black = sorIter(retvals_red.V,boolarr,nx,ny,cores,0);
-      N++;
-      if (retvals_red.Rmax > retvals_black.Rmax) {
-         Rmax = retvals_red.Rmax;
+   int threads = cores*1;
+
+   //Thread initialistion
+   pthread_t thread[threads];
+   pthread_attr_t attr;
+   pthread_attr_init(&attr);
+   pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
+
+   //Parameter initialistion
+   InitParams initparams_red[threads];
+   InitParams initparams_black[threads];
+   ReturnParams retvals_red[threads];
+   ReturnParams retvals_black[threads];
+   for (long t = 0; t < threads; t++) {
+      if (t!=threads-1){
+         int rows = nx/threads;
+         initparams_red[t].V = V;
+         initparams_red[t].boolarr = boolarr;
+         initparams_red[t].xStart = t*rows;
+         initparams_red[t].xEnd = (t+1)*rows;
+         initparams_red[t].ny = ny;
+         initparams_red[t].w = w;
+         initparams_red[t].red = 1;
+
+         initparams_black[t].V = V;
+         initparams_black[t].boolarr = boolarr;
+         initparams_black[t].xStart = t*rows;
+         initparams_black[t].xEnd = (t+1)*rows;
+         initparams_black[t].ny = ny;
+         initparams_black[t].w = w;
+         initparams_black[t].red = 0;
       } else {
-         Rmax = retvals_black.Rmax;
+         int rows = nx/threads;
+         initparams_red[t].V = V;
+         initparams_red[t].boolarr = boolarr;
+         initparams_red[t].xStart = t*rows;
+         initparams_red[t].xEnd = nx;
+         initparams_red[t].ny = ny;
+         initparams_red[t].w = w;
+         initparams_red[t].red = 1;
+
+         initparams_black[t].V = V;
+         initparams_black[t].boolarr = boolarr;
+         initparams_black[t].xStart = t*rows;
+         initparams_black[t].xEnd = nx;
+         initparams_black[t].ny = ny;
+         initparams_black[t].w = w;
+         initparams_black[t].red = 0;
       }
-      printf("Rmax after iteration %d = %f\n",N, Rmax);
-      V = retvals_black.V;
+   }
+
+   //SOR Loop
+   int i; void* status;
+   while (Rmax > tol) {
+      Rmax = 0;
+      for (i = 0; i < threads; i++) {
+         pthread_create(&thread[i], &attr, sorSlice, (void*)&initparams_red[i]);
+         //Rmax_temp[i] = sorSlice((void*)&initparams_red[i]);
+         if (temp_Rmax > Rmax) {
+            Rmax = temp_Rmax;
+         }
+      }
+      for (i = 0; i < threads; i++) {
+         pthread_join(thread[i],&status);
+      }
+      for (i = 0; i < threads; i++) {
+         pthread_create(&thread[i], &attr, sorSlice, (void*)&initparams_black[i]);
+         if (temp_Rmax > Rmax) {
+            Rmax = temp_Rmax;
+         }
+         //Rmax_temp[i] = sorSlice((void*)&initparams_black[i]);
+      }
+      for (i = 0; i < threads; i++) {
+         pthread_join(thread[i],&status);
+      }
+      N++;
+      //printf("Rmax after interation %d = %f\n", N, Rmax);
    }
    printf("%d\n", N);
    return V;

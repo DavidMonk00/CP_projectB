@@ -61,3 +61,18 @@ double** addslice2DArrayRows(double** array, double** slice, int ny, int start_r
    }
    return array;
 }
+
+int** create2DintArray(int rows, int columns) {
+   int** array;
+   array = malloc(rows*sizeof(int*));
+   for (int i = 0; i < rows; i++) {
+      array[i] = malloc(columns*sizeof(int));
+   }
+   return array;
+}
+
+int* create1DintArray(int columns) {
+   int* array;
+   array = malloc(columns*sizeof(int));
+   return array;
+}

@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "structs.h"
 #include "backgroundfunctions.h"
 #define NUM_THREADS 2
 
@@ -84,22 +85,73 @@ void* sorRowRed(void* threadarg) {
    pthread_exit(NULL);
 }*/
 
+LoopParams* getLoopParams(int** boolarr, int nx, int ny, int breaks) {
+   int** loopstarts = create2DintArray(nx, breaks + 1);
+   int** loopends = create2DintArray(nx, breaks + 1);
+   for (int i = 0; i < nx; i++) {
+      int b = 0;
+      int breaks = 1;
+      for (int j = 0; j < ny; j++) {
+         if (boolarr[i][j] == 1 && b == 0) {
+            b = 1;
+            loopends[i][breaks- 1] = j;
+         } else if (boolarr[i][j] == 0 && b == 1) {
+            b = 0;
+            loopstarts[i][breaks] = j;
+            breaks++;
+         }
+      }
+      loopends[i][breaks-1] = ny;
+   }
+   LoopParams* lp = malloc(nx*sizeof(LoopParams));
+   for (int i = 0; i < nx; i++) {
+      for (int j = 0; j < breaks + 1; j++) {
+         if (!loopends[i][j]) {
+            lp[i].loops = j-1;
+         } else {
+            lp[i].loops = breaks + 1;
+         }
+      }
+      if (lp[i].loops == 0) {
+         lp[i].loops++;
+      }
+   }
+   for (int i = 0; i < nx; i++) {
+      lp[i].starts = create1DintArray(lp[i].loops);
+      lp[i].ends = create1DintArray(lp[i].loops);
+      for (int j = 0; j < lp[i].loops; j++) {
+         lp[i].starts[j] = loopstarts[i][j];
+         lp[i].ends[j] = loopends[i][j];
+      }
+   }
+   return lp;
+}
 
 int main() {
-   double** arr = create2DArray(30,10);
-   printf("%ld\n", sizeof(arr));
-   for (int i = 0; i < 30; i++) {
-      for (int j = 0; j < 10; j++) {
-         arr[i][j] = i + j;
+   int rows = 1000;
+   int columns = 1000;
+   int breaks = 1;
+   int count = 0;
+   int** arr = create2DintArray(rows,columns);
+   for (int i = rows/3; i < 2*rows/3; i++) {
+      for (int j = columns/3; j < 2*columns/3; j++) {
+         arr[i][j] = 1;
+         count++;
       }
-      printf("%f\n", arr[i][0]);
    }
-   double** slice = slice2DArrayRows(arr,10, 6, 10);
-   for (int i = 0; i < 4; i++) {
-      printf("%f\n", slice[i][0]);
+   printf("%d\n", 1000*1000-count);
+
+   LoopParams* lp = getLoopParams(arr,rows,columns,breaks);
+   int N = 0;
+   for (int i = 0; i < rows; i++) {
+      for (int l = 0; l < lp[i].loops; l++) {
+         for (int j = lp[i].starts[l]; j < lp[i].ends[l]; j++) {
+            N++;
+            /*if (arr[i][j]){
+               N++;
+            }*/
+         }
+      }
    }
-   printf("%ld\n", sizeof(slice));
-   slice[1][2] = 103;
-   //arr = addslice2DArrayRows(arr, slice,10, 1,4);
-   printf("arr[7][2] = %f\n", arr[7][2]);
+   printf("%d\n", N);
 }

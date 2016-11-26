@@ -17,4 +17,5 @@ typedef struct {
    int ny;
    double w;
    int red;
+   LoopParams* lp;
 } InitParams;

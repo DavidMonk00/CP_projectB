@@ -43,7 +43,6 @@ ReturnParams sorSlice(void* initparams) {
       }
    }
    ReturnParams ret;
-   ret.V = V;
    ret.Rmax = Rmax;
    return ret;
 }
@@ -120,7 +119,7 @@ double** sor(double** V, int** boolarr, int nx, int ny, double tol, int cores) {
          }
       }
       N++;
-      printf("Rmax after interation %d = %f\n", N, Rmax);
+      //printf("Rmax after interation %d = %f\n", N, Rmax);
    }
    printf("%d\n", N);
    return V;

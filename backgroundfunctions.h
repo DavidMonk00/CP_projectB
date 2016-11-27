@@ -76,3 +76,45 @@ int* create1DintArray(int columns) {
    array = malloc(columns*sizeof(int));
    return array;
 }
+
+LoopParams* getLoopParams(int** boolarr, int nx, int ny, int breaks) {
+   int** loopstarts = create2DintArray(nx, breaks + 1);
+   int** loopends = create2DintArray(nx, breaks + 1);
+   for (int i = 0; i < nx; i++) {
+      int b = 0;
+      int breaks = 1;
+      for (int j = 0; j < ny; j++) {
+         if (boolarr[i][j] == 1 && b == 0) {
+            b = 1;
+            loopends[i][breaks- 1] = j;
+         } else if (boolarr[i][j] == 0 && b == 1) {
+            b = 0;
+            loopstarts[i][breaks] = j;
+            breaks++;
+         }
+      }
+      loopends[i][breaks-1] = ny;
+   }
+   LoopParams* lp = malloc(nx*sizeof(LoopParams));
+   for (int i = 0; i < nx; i++) {
+      for (int j = 0; j < breaks + 1; j++) {
+         if (!loopends[i][j]) {
+            lp[i].loops = j-1;
+         } else {
+            lp[i].loops = breaks + 1;
+         }
+      }
+      if (lp[i].loops == 0) {
+         lp[i].loops++;
+      }
+   }
+   for (int i = 0; i < nx; i++) {
+      lp[i].starts = create1DintArray(lp[i].loops);
+      lp[i].ends = create1DintArray(lp[i].loops);
+      for (int j = 0; j < lp[i].loops; j++) {
+         lp[i].starts[j] = loopstarts[i][j];
+         lp[i].ends[j] = loopends[i][j];
+      }
+   }
+   return lp;
+}

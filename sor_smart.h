@@ -55,6 +55,7 @@ double** sor(double** V, int** boolarr, int nx, int ny, double tol, int cores) {
    int N = 0;
    int rc;
    int threads = cores;
+   LoopParams lp = getLoopParams(boolarr,nx,ny,1);
 
    InitParams initparams_red[threads];
    InitParams initparams_black[threads];
@@ -70,7 +71,8 @@ double** sor(double** V, int** boolarr, int nx, int ny, double tol, int cores) {
          initparams_red[t].xEnd = (t+1)*rows;
          initparams_red[t].ny = ny;
          initparams_red[t].w = w;
-         initparams_red[t].red = 1;
+         initparams_red[t].red = 1
+         initparams_red[t].lp = lp;
 
          initparams_black[t].V = V;
          initparams_black[t].boolarr = boolarr;
@@ -79,6 +81,7 @@ double** sor(double** V, int** boolarr, int nx, int ny, double tol, int cores) {
          initparams_black[t].ny = ny;
          initparams_black[t].w = w;
          initparams_black[t].red = 0;
+         initparams_black[t].lp = lp
       } else {
          int rows = nx/threads;
          initparams_red[t].V = V;
@@ -88,7 +91,8 @@ double** sor(double** V, int** boolarr, int nx, int ny, double tol, int cores) {
          initparams_red[t].ny = ny;
          initparams_red[t].w = w;
          initparams_red[t].red = 1;
-
+         initparams_red[t].lp = lp;
+         
          initparams_black[t].V = V;
          initparams_black[t].boolarr = boolarr;
          initparams_black[t].xStart = t*rows;
@@ -96,6 +100,7 @@ double** sor(double** V, int** boolarr, int nx, int ny, double tol, int cores) {
          initparams_black[t].ny = ny;
          initparams_black[t].w = w;
          initparams_black[t].red = 0;
+         initparams_black[t].lp = lp
       }
    }
 

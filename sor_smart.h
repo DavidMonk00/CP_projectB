@@ -2,7 +2,7 @@
 #define PI 3.14159265358979323846
 
 ReturnParams sorSlice(void* initparams) {
-   InitParams* params = initparams;
+   InitParams* params = initparams; LoopParams* lp;
    double** V; int** boolarr;
    int xEnd; int xStart; int ny;
    double w; int red;
@@ -13,18 +13,21 @@ ReturnParams sorSlice(void* initparams) {
    ny = params->ny;
    w = params->w;
    red = params->red;
+   lp = params->lp;
    int yBound = ny - 1;
 
    double Rmax = 0;
    double R; int i; int j;
    if (red){
       for (i = xStart; i < xEnd; i++) {
-         for (int j = i%2; j < yBound; j=j+2) {
-            if (!boolarr[i][j]) {
-               R = (V[i-1][j]+V[i+1][j]+V[i][j-1]+V[i][j+1])/4 - V[i][j];
-               V[i][j] = V[i][j] + w*R;
-               if (R > Rmax) {
-                  Rmax = R;
+         for (int loops = 0; loops < lp[i].loops; loops++){
+            for (int j = lp[i].starts[loops] + lp[i].starts[loops]%2; j < lp[i].ends[loops]; j=j+2) {
+               if (!boolarr[i][j]) {
+                  R = (V[i-1][j]+V[i+1][j]+V[i][j-1]+V[i][j+1])/4 - V[i][j];
+                  V[i][j] = V[i][j] + w*R;
+                  if (R > Rmax) {
+                     Rmax = R;
+                  }
                }
             }
          }
@@ -43,7 +46,6 @@ ReturnParams sorSlice(void* initparams) {
       }
    }
    ReturnParams ret;
-   ret.V = V;
    ret.Rmax = Rmax;
    return ret;
 }
@@ -55,7 +57,7 @@ double** sor(double** V, int** boolarr, int nx, int ny, double tol, int cores) {
    int N = 0;
    int rc;
    int threads = cores;
-   LoopParams lp = getLoopParams(boolarr,nx,ny,1);
+   LoopParams* lp = getLoopParams(boolarr,nx,ny,1);
 
    InitParams initparams_red[threads];
    InitParams initparams_black[threads];
@@ -71,7 +73,7 @@ double** sor(double** V, int** boolarr, int nx, int ny, double tol, int cores) {
          initparams_red[t].xEnd = (t+1)*rows;
          initparams_red[t].ny = ny;
          initparams_red[t].w = w;
-         initparams_red[t].red = 1
+         initparams_red[t].red = 1;
          initparams_red[t].lp = lp;
 
          initparams_black[t].V = V;
@@ -81,26 +83,26 @@ double** sor(double** V, int** boolarr, int nx, int ny, double tol, int cores) {
          initparams_black[t].ny = ny;
          initparams_black[t].w = w;
          initparams_black[t].red = 0;
-         initparams_black[t].lp = lp
+         initparams_black[t].lp = lp;
       } else {
          int rows = nx/threads;
          initparams_red[t].V = V;
          initparams_red[t].boolarr = boolarr;
          initparams_red[t].xStart = t*rows;
-         initparams_red[t].xEnd = nx;
+         initparams_red[t].xEnd = nx-1;
          initparams_red[t].ny = ny;
          initparams_red[t].w = w;
          initparams_red[t].red = 1;
          initparams_red[t].lp = lp;
-         
+
          initparams_black[t].V = V;
          initparams_black[t].boolarr = boolarr;
          initparams_black[t].xStart = t*rows;
-         initparams_black[t].xEnd = nx;
+         initparams_black[t].xEnd = nx-1;
          initparams_black[t].ny = ny;
          initparams_black[t].w = w;
          initparams_black[t].red = 0;
-         initparams_black[t].lp = lp
+         initparams_black[t].lp = lp;
       }
    }
 
@@ -125,7 +127,7 @@ double** sor(double** V, int** boolarr, int nx, int ny, double tol, int cores) {
          }
       }
       N++;
-      printf("Rmax after interation %d = %f\n", N, Rmax);
+      //printf("Rmax after interation %d = %f\n", N, Rmax);
    }
    printf("%d\n", N);
    return V;

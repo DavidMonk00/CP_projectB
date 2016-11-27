@@ -19,7 +19,7 @@ ReturnParams sorSlice(void* initparams) {
    double R; int i; int j;
    if (red){
       for (i = xStart; i < xEnd; i++) {
-         for (int j = i%2; j < yBound; j=j+2) {
+         for (j = i%2; j < yBound; j=j+2) {
             if (!boolarr[i][j]) {
                R = (V[i-1][j]+V[i+1][j]+V[i][j-1]+V[i][j+1])/4 - V[i][j];
                V[i][j] = V[i][j] + w*R;

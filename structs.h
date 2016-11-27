@@ -1,4 +1,14 @@
 typedef struct {
+   double** V;
+   int** boolarr;
+} Mesh;
+
+typedef struct {
+   int N;
+   double** V;
+} MainReturn;
+
+typedef struct {
    int loops;
    int* starts;
    int* ends;

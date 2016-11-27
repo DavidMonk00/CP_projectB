@@ -49,7 +49,7 @@ void* sorSlice(void* initparams) {
    pthread_exit(NULL);
 }
 
-double** sor(double** V, int** boolarr, int nx, int ny, double tol, int cores) {
+MainReturn sor(double** V, int** boolarr, int nx, int ny, double tol, int cores) {
    double t = cos(PI/nx) + cos(PI/ny);
    double w = (8-sqrt(64-16*t*t))/(t*t);
    double Rmax = 1;
@@ -130,8 +130,10 @@ double** sor(double** V, int** boolarr, int nx, int ny, double tol, int cores) {
          pthread_join(thread[i],&status);
       }
       N++;
-      printf("Rmax after interation %d = %f\n", N, Rmax);
+      //printf("Rmax after interation %d = %f\n", N, Rmax);
    }
-   printf("%d\n", N);
-   return V;
+   MainReturn mr;
+   mr.N = N;
+   mr.V = V;
+   return mr;
 }

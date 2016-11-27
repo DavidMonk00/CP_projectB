@@ -1,32 +1,20 @@
 import numpy as np
 
-x = np.zeros(30).reshape(3,10)
-for i in range(4):
-	x[1][i+3] = 1
+
+nx = 1000
+ny = 1000
+factor = 10
+
+x = np.linspace(0,1,(nx/factor)*(ny/factor)).reshape(nx/factor,ny/factor)
+for i in range(nx/(3*factor),2*nx/(3*factor)):
+	for j in range(ny/(3*factor),2*ny/(3*factor)):
+		x[i][j] = 1
 print x
 
-breakstart = []
-breakend = []
+y = np.zeros(nx*ny).reshape(nx,ny)
+for i in range(nx):
+	for j in range(ny):
+		y[i][j] = x[i/factor][j/factor]
+			
+print y[nx/2]
 
-for i in range(len(x)):
-	bstart = []
-	bend = [0]
-	b = False
-	for j in range(len(x[0])):
-		if (x[i][j] == 1 and b == False):
-			b = True
-			bstart.append(j)
-		elif (x[i][j] == 0 and b == True):
-			b = False
-			bend.append(j)
-	bstart.append(len(x[0]))
-	breakstart.append(tuple(bstart))
-	breakend.append(tuple(bend))
-	
-print breakstart
-print breakend	
-
-for i in range(len(x)):
-	for j in range(len(breakstart[i])):
-		for k in range(breakend[i][j],breakstart[i][j]):
-			print i,k,x[i][k]	

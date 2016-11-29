@@ -36,8 +36,8 @@ void writeFile(double** array, int nx, int ny, int order) {
 }
 
 int main(int argc, char **argv) {
-   double tol = 1e-10;
-   int order = -10;
+   double tol = 1e-8;
+   int order = -8;
    int nx;
    int ny;
    int cores;

@@ -36,6 +36,8 @@ void writeFile(double** array, int nx, int ny, int order) {
 }
 
 int main(int argc, char **argv) {
+   double tol = 1e-10;
+   int order = -10;
    int nx;
    int ny;
    int cores;
@@ -67,10 +69,10 @@ int main(int argc, char **argv) {
    MainReturn mr_coarse;
    mr_coarse.N = 0;
    while (mr_coarse.N < 10) {
-      mr_coarse = sor(V_coarse,boolarr_coarse,nx/factor,ny/factor,1e-5,cores);
+      mr_coarse = sor(V_coarse,boolarr_coarse,nx/factor,ny/factor,1e-3,cores);
       printf("Iterations: %d\n", mr_coarse.N);
    }
-   printf("Coarse array generated.\n");
+   printf("Coarse solution found.\n");
    double** V = generateFineVArray(V_coarse, nx, ny, factor);
    printf("Generated fine array.\n");
    int** boolarr = generateBoolArrayWire(nx,ny);
@@ -78,8 +80,6 @@ int main(int argc, char **argv) {
    printf("%s\n", "Grid built, running algorithm...");
    MainReturn mr;
    mr.N = 0;
-   double tol = 1e-8;
-   int order = -8;
    while (mr.N < 10) {
       mr = sor(V,boolarr,nx,ny,tol,cores);
       printf("Iterations: %d\n", mr.N);

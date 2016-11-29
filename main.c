@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
+#include <time.h>
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_blas.h>
 #include "structs.h"
@@ -9,8 +10,17 @@
 #include "sor_multi.h"
 
 
-void writeFile(double** array, int nx, int ny){
-   FILE *f = fopen("./file.lf", "w");
+void writeFile(double** array, int nx, int ny, int order) {
+   time_t t = time(NULL);
+   struct tm *tm = localtime(&t);
+   char s[64];
+   strftime(s, sizeof(s), "./data/cable/%Y%m%d%H%M%S", tm);
+   char ext[64];
+   sprintf(ext, "_%d_%d.lf",nx,order);
+   strcat(s,ext);
+   //printf("%s\n", s);
+
+   FILE *f = fopen(s, "w");
    if (f == NULL) {
       printf("Error opening file.");
       exit(1);
@@ -68,12 +78,14 @@ int main(int argc, char **argv) {
    printf("%s\n", "Grid built, running algorithm...");
    MainReturn mr;
    mr.N = 0;
+   double tol = 1e-8;
+   int order = -8;
    while (mr.N < 10) {
-      mr = sor(V,boolarr,nx,ny,1e-5,cores);
+      mr = sor(V,boolarr,nx,ny,tol,cores);
       printf("Iterations: %d\n", mr.N);
    }
    printf("%s\n", "Algorithm complete. Writing to file...");
-   writeFile(V,nx,ny);
+   writeFile(V,nx,ny,order);
    free(V);
    free(boolarr);
    return 0;

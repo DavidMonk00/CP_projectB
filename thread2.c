@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include "structs.h"
 #include "backgroundfunctions.h"
 #define NUM_THREADS 2
@@ -85,7 +86,7 @@ void* sorRowRed(void* threadarg) {
    pthread_exit(NULL);
 }*/
 
-LoopParams* getLoopParams(int** boolarr, int nx, int ny, int breaks) {
+/*LoopParams* getLoopParams(int** boolarr, int nx, int ny, int breaks) {
    int** loopstarts = create2DintArray(nx, breaks + 1);
    int** loopends = create2DintArray(nx, breaks + 1);
    for (int i = 0; i < nx; i++) {
@@ -125,10 +126,10 @@ LoopParams* getLoopParams(int** boolarr, int nx, int ny, int breaks) {
       }
    }
    return lp;
-}
+}*/
 
 int main() {
-   int rows = 1000;
+   /*int rows = 1000;
    int columns = 1000;
    int breaks = 1;
    int count = 0;
@@ -149,9 +150,11 @@ int main() {
             N++;
             /*if (arr[i][j]){
                N++;
-            }*/
+            }
          }
       }
    }
-   printf("%d\n", N);
+   printf("%d\n", N);*/
+   double x = pow(2,4);
+   printf("%f\n", x);
 }

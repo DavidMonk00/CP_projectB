@@ -130,7 +130,7 @@ MainReturn sor(double** V, int** boolarr, int nx, int ny, double tol, int cores)
          pthread_join(thread[i],&status);
       }
       N++;
-      //printf("Rmax after interation %d = %f\n", N, Rmax);
+      printf("Rmax after interation %d = %f\n", N, Rmax);
    }
    MainReturn mr;
    mr.N = N;

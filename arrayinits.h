@@ -70,3 +70,60 @@ double** generateFineVArray(double** V, int nx, int ny, int factor) {
    }
    return newV;
 }
+
+int** generateBoolArrayEDM(int scale) {
+   int** boolarr = create2DintArray(9*scale,32*scale);
+   int i;
+   for (i = 1; i < scale*9 - 1; i++) {
+      boolarr[i][0] = 1;
+      boolarr[i][scale*32-1] = 1;
+   }
+   for (i = 0; i < scale*32; i++) {
+      boolarr[0][i] = 1;
+      boolarr[scale*9-1][i] = 1;
+   }
+   int j;
+   for (i = 3*scale; i < 4*scale; i++) {
+      for (j = 3*scale; j < 5*scale; j++) {
+         boolarr[i][j] = 1;
+         boolarr[i][j+24*scale] = 1;
+      }
+      for (j = 6*scale; j < 26*scale; j++) {
+         boolarr[i][j] = 1;
+      }
+   }
+   for (i = 5*scale; i < 6*scale; i++) {
+      for (j = 3*scale; j < 5*scale; j++) {
+         boolarr[i][j] = 1;
+         boolarr[i][j+24*scale] = 1;
+      }
+      for (j = 6*scale; j < 26*scale; j++) {
+         boolarr[i][j] = 1;
+      }
+   }
+   return boolarr;
+}
+
+double** generateVArrayEDM(int scale) {
+   double** V = create2DArray(9*scale,32*scale);
+   int i; int j;
+   for (i = 3*scale; i < 4*scale; i++) {
+      for (j = 3*scale; j < 5*scale; j++) {
+         V[i][j] = 1;
+         V[i][j+24*scale] = 1;
+      }
+      for (j = 6*scale; j < 26*scale; j++) {
+         V[i][j] = 4;
+      }
+   }
+   for (i = 5*scale; i < 6*scale; i++) {
+      for (j = 3*scale; j < 5*scale; j++) {
+         V[i][j] = -1;
+         V[i][j+24*scale] = -1;
+      }
+      for (j = 6*scale; j < 26*scale; j++) {
+         V[i][j] = -4;
+      }
+   }
+   return V;
+}

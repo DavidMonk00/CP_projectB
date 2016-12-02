@@ -2,15 +2,28 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 
+def derivative(x,row):
+    l = len(x[row])
+    xprime = np.empty(l)
+    for i in range(l):
+        xprime[i] = np.abs(-x[row-2][i] + 8*x[row-1][i] - 8*x[row+1][i] + x[row+2][i])
+    return xprime
+
 f = [file for file in os.listdir("./data/cable/") if file.endswith(".lf")]
 f.sort()
 
 V = 2*np.loadtxt("./data/cable/"+f[-1], 'float64')
 
 
-plt.imshow(V,interpolation='nearest')#  cmap='hot')
-plt.show()
+#plt.imshow(V,interpolation='nearest')#  cmap='hot')
+#plt.show()
 
-x = np.linspace(-1,1,len(V[0]))
-plt.plot(x,V[len(V)/2])# - len(V)/10])
+l = len(V[0])
+y = derivative(V,len(V)/2)[3*l/16:13*l/16]
+l = len(y)
+y = y[l/10:9*l/10]
+m = np.mean(y)
+y_i = np.abs((m-y)/m)
+x = np.linspace(0,1,len(y))
+plt.plot(x,y_i)# - len(V)/10])
 plt.show()

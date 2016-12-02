@@ -13,7 +13,7 @@ void writeFile(double** array, int nx, int ny, int order) {
    time_t t = time(NULL);
    struct tm *tm = localtime(&t);
    char s[64];
-   strftime(s, sizeof(s), "./data/cable/%Y%m%d%H%M%S", tm);
+   strftime(s, sizeof(s), "./data/edm/%Y%m%d%H%M%S", tm);
    char ext[64];
    sprintf(ext, "_%d_%d.lf",nx,order);
    strcat(s,ext);

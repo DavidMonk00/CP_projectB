@@ -2,8 +2,6 @@
 #include <unistd.h>
 #include <string.h>
 #include <time.h>
-#include <gsl/gsl_vector.h>
-#include <gsl/gsl_blas.h>
 #include "structs.h"
 #include "backgroundfunctions.h"
 #include "arrayinits.h"

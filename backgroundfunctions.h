@@ -6,7 +6,6 @@
  * double pendulums.
  */
 
-#include <gsl/gsl_blas.h>
 #include <math.h>
 
 int length(double* array) {

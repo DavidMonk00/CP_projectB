@@ -27,7 +27,7 @@ void writeFile(double** array, int nx, int ny, int order) {
    int i; int j;
    for (i = 0; i < nx; i++) {
       for (j = 0; j < ny; j++) {
-         fprintf(f, "%f ", array[i][j]);
+         fprintf(f, "%0.15lf ", array[i][j]);
       }
       fprintf(f, "\n");
    }

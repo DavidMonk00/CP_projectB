@@ -58,7 +58,7 @@ MainReturn sor(double** V, int** boolarr, int nx, int ny, double tol, int cores)
    int threads = 1;
 
    InitParams initparams_red;
-   InitParams initparams_black[threads];
+   InitParams initparams_black;
    ReturnParams retvals_red[threads];
    ReturnParams retvals_black[threads];
 
@@ -72,13 +72,13 @@ MainReturn sor(double** V, int** boolarr, int nx, int ny, double tol, int cores)
          initparams_red.w = w;
          initparams_red.red = 1;
 
-         initparams_black[t].V = V;
-         initparams_black[t].boolarr = boolarr;
-         initparams_black[t].xStart = t*rows;
-         initparams_black[t].xEnd = nx;
-         initparams_black[t].ny = ny;
-         initparams_black[t].w = w;
-         initparams_black[t].red = 0;
+         initparams_black.V = V;
+         initparams_black.boolarr = boolarr;
+         initparams_black.xStart = t*rows;
+         initparams_black.xEnd = nx;
+         initparams_black.ny = ny;
+         initparams_black.w = w;
+         initparams_black.red = 0;
    }
 
    while (Rmax > tol) {
@@ -93,7 +93,7 @@ MainReturn sor(double** V, int** boolarr, int nx, int ny, double tol, int cores)
          }
       }
       for (i = 0; i < threads; i++) {
-         retvals_black[i] = sorSlice((void*)&initparams_black[i]);
+         retvals_black[i] = sorSlice((void*)&initparams_black);
       }
       for (i = 0; i < threads; i++) {
 

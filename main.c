@@ -6,7 +6,7 @@
 #include "structs.h"
 #include "backgroundfunctions.h"
 #include "arrayinits.h"
-#include "sor.h"
+#include "sor_multi.h"
 
 
 void writeFile(double** array, int nx, int ny, int order) {
@@ -101,7 +101,7 @@ void EDM(double tol, int order, int scale, int cores) {
       mr = sor(V,boolarr,nx,ny,tol,cores);
       printf("Iterations: %d\n", mr.N);
    }
-   printf("%s\n", "Algorithm complete. Writing to file...");
+   //printf("%s\n", "Algorithm complete. Writing to file...");
    writeFile(V,nx,ny,order);
    free(V);
    free(boolarr);

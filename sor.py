@@ -70,18 +70,18 @@ class DataAnalysis:
         self.loadFileToArray()
         self.derivative()
         self.homogenous()
-        print "Length of field homogenous to "+str(self.tolerance*100)+"%: "+str(float(len(self.homogenousField))*10/(self.rows/9))+"mm"
+        print "Length of field homogenous to "+str(self.tolerance)+": "+str(float(len(self.homogenousField))*10/(self.rows/9))+"mm"
 
 def main():
-    d = DataAnalysis(1e-7)
-    #d.doItAllForMe()
+    d = DataAnalysis(1e-10)
+    d.doItAllForMe()
 
-    d.getFilename()
+    '''d.getFilename()
     d.getFileRows()
     d.loadFileToArray()
     d.derivative()
     d.homogenous()
-    print "Length of field homogenous to "+str(d.tolerance)+": "+str(float(len(d.homogenousField))*10/(d.rows/9))+"mm"
+    print "Length of field homogenous to "+str(d.tolerance)+": "+str(float(len(d.homogenousField))*10/(d.rows/9))+"mm"'''
 
 
 if (__name__ == '__main__'):

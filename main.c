@@ -6,7 +6,7 @@
 #include "structs.h"
 #include "backgroundfunctions.h"
 #include "arrayinits.h"
-#include "sor_multi.h"
+#include "sor.h"
 
 
 void writeFile(double** array, int nx, int ny, int order) {

@@ -1,5 +1,6 @@
 #include <math.h>
 #include <pthread.h>
+#include <omp.h>
 #define PI 3.14159265358979323846
 
 double temp_Rmax;
@@ -22,6 +23,7 @@ void* sorSlice(void* initparams) {
    double R; int i; int j;
    if (red){
       for (i = xStart; i < xEnd; i++) {
+         #pragma omp parallel for
          for (int j = i%2; j < yBound; j=j+2) {
             if (!boolarr[i][j]) {
                R = (V[i-1][j]+V[i+1][j]+V[i][j-1]+V[i][j+1])/4 - V[i][j];
@@ -54,7 +56,7 @@ MainReturn sor(double** V, int** boolarr, int nx, int ny, double tol, int cores)
    double w = (8-sqrt(64-16*t*t))/(t*t);
    double Rmax = 1;
    int N = 0;
-   int threads = cores*1;
+   int threads = 1;
 
    //Thread initialistion
    pthread_t thread[threads];
@@ -111,21 +113,26 @@ MainReturn sor(double** V, int** boolarr, int nx, int ny, double tol, int cores)
       Rmax = 0;
       for (i = 0; i < threads; i++) {
          pthread_create(&thread[i], &attr, sorSlice, (void*)&initparams_red[i]);
+         //Rmax_temp[i] = sorSlice((void*)&initparams_red[i]);
+         if (temp_Rmax > Rmax) {
+            Rmax = temp_Rmax;
+         }
       }
       for (i = 0; i < threads; i++) {
          pthread_join(thread[i],&status);
       }
       for (i = 0; i < threads; i++) {
          pthread_create(&thread[i], &attr, sorSlice, (void*)&initparams_black[i]);
-      }
-      for (i = 0; i < threads; i++) {
-         pthread_join(thread[i],&status);
          if (temp_Rmax > Rmax) {
             Rmax = temp_Rmax;
          }
+         //Rmax_temp[i] = sorSlice((void*)&initparams_black[i]);
+      }
+      for (i = 0; i < threads; i++) {
+         pthread_join(thread[i],&status);
       }
       N++;
-      //printf("Rmax after interation %d = %0.15lf\n", N, Rmax);
+      printf("Rmax after interation %d = %0.15lf\n", N, Rmax);
    }
    MainReturn mr;
    mr.N = N;

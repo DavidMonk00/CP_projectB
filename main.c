@@ -108,22 +108,18 @@ void EDM(double tol, int order, int scale, int cores) {
 }
 
 int main(int argc, char **argv) {
-   double tol = 1e-8;
-   int order = -8;
-   int nx;
-   int ny;
+   double tol = 1e-12;
+   int order = (int)log10(tol);
    int cores;
+   int scale;
    if (argc > 1) {
-      nx = atoi(argv[1]);
-      ny = atoi(argv[2]);
-      cores = atoi(argv[3]);
+      scale = atoi(argv[1]);
+      cores = atoi(argv[2]);
    } else {
-      nx = 100;
-      ny = 100;
+      scale = 10;
       cores = 4;
    }
    int factor = 4;
-   int scale = nx;
    //Wire(tol,order,nx,ny,cores,factor);
    EDM(tol,order,scale,cores);
    return 0;

@@ -7,25 +7,18 @@ double temp_Rmax;
 void* sorSlice(void* initparams) {
    InitParams* params = initparams;
    double** V; int** boolarr;
-   int xEnd; int xStart; int ny;
-   double w; int red;
    V = params->V;
    boolarr = params->boolarr;
-   xStart = params->xStart;
-   xEnd = params->xEnd;
-   ny = params->ny;
-   w = params->w;
-   red = params->red;
-   int yBound = ny - 1;
+   int yBound = params->ny - 1;
 
    temp_Rmax = 0;
    double R; int i; int j;
-   if (red){
-      for (i = xStart; i < xEnd; i++) {
-         for (int j = i%2; j < yBound; j=j+2) {
+   if (params->red){
+      for (i = params->xStart; i < params->xEnd; i++) {
+         for (j = i%2; j < yBound; j=j+2) {
             if (!boolarr[i][j]) {
                R = (V[i-1][j]+V[i+1][j]+V[i][j-1]+V[i][j+1])/4 - V[i][j];
-               V[i][j] = V[i][j] + w*R;
+               V[i][j] = V[i][j] + params->w*R;
                if (R > temp_Rmax) {
                   temp_Rmax = R;
                }
@@ -33,11 +26,11 @@ void* sorSlice(void* initparams) {
          }
       }
    } else {
-      for (i = xStart; i < xEnd; i++) {
+      for (i = params->xStart; i < params->xEnd; i++) {
          for (j = (i+1)%2; j < yBound; j=j+2) {
             if (!boolarr[i][j]) {
                R = (V[i-1][j]+V[i+1][j]+V[i][j-1]+V[i][j+1])/4 - V[i][j];
-               V[i][j] = V[i][j] + w*R;
+               V[i][j] = V[i][j] + params->w*R;
                if (R > temp_Rmax) {
                   temp_Rmax = R;
                }
@@ -45,7 +38,6 @@ void* sorSlice(void* initparams) {
          }
       }
    }
-   //printf("%f\n", temp_Rmax);
    pthread_exit(NULL);
 }
 
@@ -106,7 +98,7 @@ MainReturn sor(double** V, int** boolarr, int nx, int ny, double tol, int cores)
    }
 
    //SOR Loop
-   int i; void* status;
+   int i; void* status; double res = 1;
    while (Rmax > tol) {
       Rmax = 0;
       for (i = 0; i < threads; i++) {
@@ -125,7 +117,11 @@ MainReturn sor(double** V, int** boolarr, int nx, int ny, double tol, int cores)
          }
       }
       N++;
-      //printf("Rmax after interation %d = %0.15lf\n", N, Rmax);
+      //Progress report
+      if (Rmax < res) {
+         printf("Rmax after interation %d = %0.15lf\n", N, Rmax);
+         res = res/10;
+      }
    }
    MainReturn mr;
    mr.N = N;

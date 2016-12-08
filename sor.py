@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 import csv
+import sys
 
 
 class DataAnalysis:
@@ -73,15 +74,21 @@ class DataAnalysis:
         print "Length of field homogenous to "+str(self.tolerance)+": "+str(float(len(self.homogenousField))*10/(self.rows/9))+"mm"
 
 def main():
-    d = DataAnalysis(1e-10)
-    d.doItAllForMe()
+    if (len(sys.argv) > 1):
+        tol = float(sys.argv[1])
+    else:
+        tol = 1e-6
+    d = DataAnalysis(tol)
+    #d.doItAllForMe()
 
-    '''d.getFilename()
+    d.getFilename()
     d.getFileRows()
+    print 'Loading file...'
     d.loadFileToArray()
+    print 'File loaded. Calculating field...'
     d.derivative()
     d.homogenous()
-    print "Length of field homogenous to "+str(d.tolerance)+": "+str(float(len(d.homogenousField))*10/(d.rows/9))+"mm"'''
+    print "Length of field homogenous to "+str(d.tolerance)+": "+str(float(len(d.homogenousField))*10/(d.rows/9))+"mm"
 
 
 if (__name__ == '__main__'):

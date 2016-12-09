@@ -97,30 +97,33 @@ void EDM(double tol, int order, int scale, int cores) {
    printf("%s\n", "Grid built, running algorithm...");
    MainReturn mr;
    mr.N = 0;
-   while (mr.N < 10) {
+   while (mr.N < 20) {
       mr = sor(V,boolarr,nx,ny,tol,cores);
-      printf("Iterations: %d\n", mr.N);
+      printf("Total iterations: %d\n", mr.N);
    }
-   //printf("%s\n", "Algorithm complete. Writing to file...");
+   printf("%s\n", "Algorithm complete. Writing to file...");
    writeFile(V,nx,ny,order);
    free(V);
    free(boolarr);
 }
 
 int main(int argc, char **argv) {
-   double tol = 1e-12;
-   int order = (int)log10(tol);
+   double tol;
    int cores;
    int scale;
    if (argc > 1) {
       scale = atoi(argv[1]);
-      cores = atoi(argv[2]);
+      tol = atof(argv[2]);
+      cores = atoi(argv[3]);
    } else {
       scale = 10;
+      tol = 1e-8;
       cores = 4;
    }
+   int order = (int)log10(tol);
+   printf("Algorithm tolerance: 1e%d\n", order);
    int factor = 4;
-   //Wire(tol,order,nx,ny,cores,factor);
+   //Wire(tol,order,scale,scale,cores,factor);
    EDM(tol,order,scale,cores);
    return 0;
 }

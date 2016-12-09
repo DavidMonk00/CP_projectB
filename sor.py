@@ -75,7 +75,7 @@ class DataAnalysis:
 
 def main():
     if (len(sys.argv) > 1):
-        tol = float(sys.argv[1])
+        tol = float(sys.argv[1])*100
     else:
         tol = 1e-6
     d = DataAnalysis(tol)

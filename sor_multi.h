@@ -119,7 +119,7 @@ MainReturn sor(double** V, int** boolarr, int nx, int ny, double tol, int cores)
       N++;
       //Progress report
       if (Rmax < res) {
-         printf("Rmax after interation %d = %0.15lf\n", N, Rmax);
+         printf("Max. residual after iteration %d = 1e%d\n", N, (int)log10(Rmax));
          res = res/10;
       }
    }

@@ -71,7 +71,7 @@ double** generateFineVArray(double** V, int nx, int ny, int factor) {
    return newV;
 }
 
-int** generateBoolArrayEDM(int scale) {
+int** generateBoolArrayEDM(int scale, int dust) {
    int** boolarr = create2DintArray(9*scale,32*scale);
    int i;
    for (i = 1; i < scale*9 - 1; i++) {
@@ -101,10 +101,13 @@ int** generateBoolArrayEDM(int scale) {
          boolarr[i][j] = 1;
       }
    }
+   if (dust && scale>99) {
+      boolarr[5*scale -1][11*scale] = 1;
+   }
    return boolarr;
 }
 
-double** generateVArrayEDM(int scale) {
+double** generateVArrayEDM(int scale, int dust) {
    double** V = create2DArray(9*scale,32*scale);
    int i; int j;
    for (i = 3*scale; i < 4*scale; i++) {
@@ -124,6 +127,9 @@ double** generateVArrayEDM(int scale) {
       for (j = 6*scale; j < 26*scale; j++) {
          V[i][j] = -4;
       }
+   }
+   if (dust && scale>99) {
+      V[5*scale -1][11*scale] = -4;
    }
    return V;
 }

@@ -9,16 +9,18 @@
 #include "sor_multi.h"
 
 
-void writeFile(double** array, int nx, int ny, int order) {
+void writeFile(double** array, int nx, int ny, int order, int dust) {
    time_t t = time(NULL);
    struct tm *tm = localtime(&t);
    char s[64];
    strftime(s, sizeof(s), "./data/edm/%Y%m%d%H%M%S", tm);
    char ext[64];
-   sprintf(ext, "_%d_%d.lf",nx,order);
+   if (dust) {
+      sprintf(ext, "_%d_%d_dust.lf",nx,order);
+   } else {
+      sprintf(ext, "_%d_%d.lf",nx,order);
+   }
    strcat(s,ext);
-   //printf("%s\n", s);
-
    FILE *f = fopen(s, "w");
    if (f == NULL) {
       printf("Error opening file.");
@@ -83,17 +85,17 @@ void Wire(double tol, int order, int nx, int ny, int cores,int factor) {
       printf("Iterations: %d\n", mr.N);
    }
    printf("%s\n", "Algorithm complete. Writing to file...");
-   writeFile(V,nx,ny,order);
+   writeFile(V,nx,ny,order, 0);
    free(V);
    free(boolarr);
 }
 
-void EDM(double tol, int order, int scale, int cores) {
+void EDM(double tol, int order, int scale, int cores, int dust) {
    int nx = 9*scale;
    int ny = 32*scale;
-   double** V = generateVArrayEDM(scale);
+   double** V = generateVArrayEDM(scale,dust);
    printf("Generated array.\n");
-   int** boolarr = generateBoolArrayEDM(scale);
+   int** boolarr = generateBoolArrayEDM(scale,dust);
    printf("%s\n", "Grid built, running algorithm...");
    MainReturn mr;
    mr.N = 0;
@@ -102,7 +104,7 @@ void EDM(double tol, int order, int scale, int cores) {
       printf("Total iterations: %d\n", mr.N);
    }
    printf("%s\n", "Algorithm complete. Writing to file...");
-   writeFile(V,nx,ny,order);
+   writeFile(V,nx,ny,order,dust);
    free(V);
    free(boolarr);
 }
@@ -111,19 +113,26 @@ int main(int argc, char **argv) {
    double tol;
    int cores;
    int scale;
+   int dust;
    if (argc > 1) {
       scale = atoi(argv[1]);
       tol = atof(argv[2]);
-      cores = atoi(argv[3]);
+      if (atoi(argv[3])) {
+         dust = 1;
+      } else {
+         dust = 0;
+      }
+      cores = atoi(argv[4]);
    } else {
       scale = 10;
       tol = 1e-8;
       cores = 4;
    }
+   printf("%d\n", dust);
    int order = (int)log10(tol);
    printf("Algorithm tolerance: 1e%d\n", order);
    int factor = 4;
    //Wire(tol,order,scale,scale,cores,factor);
-   EDM(tol,order,scale,cores);
+   EDM(tol,order,scale,cores, dust);
    return 0;
 }

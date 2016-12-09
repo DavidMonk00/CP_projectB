@@ -10,7 +10,6 @@ void* sorSlice(void* initparams) {
    V = params->V;
    boolarr = params->boolarr;
    int yBound = params->ny - 1;
-
    temp_Rmax = 0;
    double R; int i; int j;
    if (params->red){

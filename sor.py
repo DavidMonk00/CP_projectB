@@ -91,5 +91,13 @@ def main():
     print "Length of field homogenous to "+str(d.tolerance)+": "+str(float(len(d.homogenousField))*10/(d.rows/9))+"mm"
 
 
+def Plot2D():
+    f = [file for file in os.listdir("./data/edm/") if file.endswith(".lf")]
+    f.sort()
+    V = np.loadtxt("./data/edm/"+f[-1])
+    plt.imshow(V)
+    plt.show()
+
 if (__name__ == '__main__'):
     main()
+    Plot2D()

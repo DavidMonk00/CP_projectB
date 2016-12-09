@@ -16,7 +16,7 @@ void writeFile(double** array, int nx, int ny, int order, int dust) {
    strftime(s, sizeof(s), "./data/edm/%Y%m%d%H%M%S", tm);
    char ext[64];
    if (dust) {
-      sprintf(ext, "_%d_%d_dust.lf",nx,order);
+      sprintf(ext, "_dust_%d_%d.lf",nx,order);
    } else {
       sprintf(ext, "_%d_%d.lf",nx,order);
    }
@@ -128,7 +128,6 @@ int main(int argc, char **argv) {
       tol = 1e-8;
       cores = 4;
    }
-   printf("%d\n", dust);
    int order = (int)log10(tol);
    printf("Algorithm tolerance: 1e%d\n", order);
    int factor = 4;

@@ -97,7 +97,10 @@ MainReturn sor(double** V, int** boolarr, int nx, int ny, double tol, int cores)
    }
 
    //SOR Loop
-   int i; void* status; double res = 1;
+   int i; void* status; double res = 0.1;
+   float expo = (float)log10(tol);
+   clock_t t1,t2;
+   t1 = clock();
    while (Rmax > tol) {
       Rmax = 0;
       for (i = 0; i < threads; i++) {
@@ -119,6 +122,9 @@ MainReturn sor(double** V, int** boolarr, int nx, int ny, double tol, int cores)
       //Progress report
       if (Rmax < res) {
          printf("Max. residual after iteration %d = 1e%d\n", N, (int)log10(Rmax));
+         t2 = clock();
+         float elapsed = (float)(t2-t1)/(CLOCKS_PER_SEC*cores);
+         printf("Time elapsed: %0.1fs | Time remaining: %0.1fs\n", elapsed, (expo*elapsed/(float)log10(Rmax))-elapsed);
          res = res/10;
       }
    }

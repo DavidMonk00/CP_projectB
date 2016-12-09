@@ -102,7 +102,12 @@ int** generateBoolArrayEDM(int scale, int dust) {
       }
    }
    if (dust && scale>99) {
-      boolarr[5*scale -1][11*scale] = 1;
+      int size = scale/100;
+      for (int i = 0; i < size; i++) {
+         for (int j = 0; j < size; j++) {
+               boolarr[5*scale - (1+i)][11*scale + j] = 1;
+         }
+      }
    }
    return boolarr;
 }
@@ -129,7 +134,12 @@ double** generateVArrayEDM(int scale, int dust) {
       }
    }
    if (dust && scale>99) {
-      V[5*scale -1][11*scale] = -4;
+      int size = scale/100;
+      for (int i = 0; i < size; i++) {
+         for (int j = 0; j < size; j++) {
+               V[5*scale - (1+i)][11*scale + j] = -4;
+         }
+      }
    }
    return V;
 }

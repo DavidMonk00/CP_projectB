@@ -109,6 +109,35 @@ void EDM(double tol, int order, int scale, int cores, int dust) {
    free(boolarr);
 }
 
+void EDMRefining(double tol, int order, int scale, int cores, int dust) {
+   int coarse_scale = scale/4;
+   int nx_coarse = 9 * coarse_scale;
+   int ny_coarse = 32 * coarse_scale;
+   double** V_coarse = generateVArrayEDMCoarse(coarse_scale,dust);
+   int** boolarr_coarse = generateBoolArrayEDMCoarse(coarse_scale,dust);
+   MainReturn mr_coarse;
+   mr_coarse.N = 0;
+   while (mr_coarse.N < 20) {
+      mr_coarse = sor(V_coarse,boolarr_coarse,nx_coarse,ny_coarse,1e-6,cores);
+   }
+   int nx = 9*scale;
+   int ny = 32*scale;
+   double** V = generateFineVArray(V_coarse, nx, ny, 4);
+   printf("Generated array.\n");
+   int** boolarr = generateBoolArrayEDM(scale,dust);
+   printf("%s\n", "Grid built, running algorithm...");
+   MainReturn mr;
+   mr.N = 0;
+   while (mr.N < 20) {
+      mr = sor(V,boolarr,nx,ny,tol,cores);
+      printf("Total iterations: %d\n", mr.N);
+   }
+   printf("%s\n", "Algorithm complete. Writing to file...");
+   writeFile(V,nx,ny,order,dust);
+   free(V);
+   free(boolarr);
+}
+
 int main(int argc, char **argv) {
    double tol;
    int cores;

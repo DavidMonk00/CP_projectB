@@ -48,22 +48,28 @@ class DataAnalysis:
     def derivative(self):
         row = len(self.V)/2
         l = len(self.V[row])
-        xprime = np.empty(l)
+        self.E = np.empty(l)
         for i in range(l):
-            xprime[i] = np.abs(-self.V[row-2][i] + 8*self.V[row-1][i] - 8*self.V[row+1][i] + self.V[row+2][i])
-        self.E = xprime
+            self.E[i] = np.abs(-self.V[row-2][i] + 8*self.V[row-1][i] - 8*self.V[row+1][i] + self.V[row+2][i])*100*l/32
+        plt.plot(self.E)
+        plt.xlim(0,l)
+        plt.show()
 
     def homogenous(self):
-        err_max = 0
+        err_max_left = 0
+        err_max_right = 0
+        left, right = 0,0
         i = 0
         l = len(self.E)/2
-        while (err_max < self.tolerance):
-            err_max = np.abs((self.E[l + i] - self.E[l])/self.E[l])
-            err_m = np.abs((self.E[l - i] - self.E[l])/self.E[l])
-            if (err_m > err_max):
-                err_max = err_m
+        while (err_max_left < self.tolerance or err_max_right < self.tolerance):
+            err_max_right = np.abs((self.E[l + i] - self.E[l])/self.E[l])
+            err_max_left = np.abs((self.E[l - i] - self.E[l])/self.E[l])
+            if (err_max_right > self.tolerance):
+                right = i - 1
+            if (err_max_left > self.tolerance):
+                left = i - 1
             i += 1
-        self.homogenousField = self.E[l-(i-1):l+(i-1)]
+        self.homogenousField = self.E[l-(left):l+(right)]
 
     def doItAllForMe(self):
         self.getLargestFileName()
@@ -100,4 +106,4 @@ def Plot2D():
 
 if (__name__ == '__main__'):
     main()
-    #Plot2D()
+    Plot2D()

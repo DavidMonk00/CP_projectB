@@ -48,11 +48,17 @@ class DataAnalysis:
     def derivative(self):
         row = len(self.V)/2
         l = len(self.V[row])
-        self.E = np.empty(l)
+        yprime = np.empty(l)
+        xprime = np.empty(l)
         for i in range(l):
-            self.E[i] = np.abs(-self.V[row-2][i] + 8*self.V[row-1][i] - 8*self.V[row+1][i] + self.V[row+2][i])*100*l/32
+            yprime[i] = (-self.V[row-2][i] + 8*self.V[row-1][i] - 8*self.V[row+1][i] + self.V[row+2][i])*100*l/(32*12)
+        for i in range(2,l-2):
+            xprime[i] = (-self.V[row][i-2] + 8*self.V[row][i-1] - 8*self.V[row][i+1] + self.V[row][i+2])*100*l/(32*12)
+        self.E = np.sqrt(yprime*yprime + xprime*xprime)
         plt.plot(self.E)
         plt.xlim(0,l)
+        plt.xlabel('x')
+        plt.ylabel('Magnitude of Electric Field (V/m)')
         plt.show()
 
     def homogenous(self):
@@ -101,7 +107,8 @@ def Plot2D():
     f = [file for file in os.listdir("./data/edm/") if file.endswith(".lf")]
     f.sort()
     V = np.loadtxt("./data/edm/"+f[-1])
-    plt.imshow(V)
+    plt.imshow(V, interpolation='nearest')
+    plt.colorbar(orientation='horizontal')
     plt.show()
 
 if (__name__ == '__main__'):

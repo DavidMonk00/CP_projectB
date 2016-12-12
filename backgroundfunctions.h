@@ -1,9 +1,7 @@
 /* 20161104
  * David Monk
  *
- * This header file contains the matrix operation functions used
- * within the FDM methods implemented for both the single and
- * double pendulums.
+ * This header file contains basic functions used throughout the code.
  */
 
 #include <math.h>
@@ -61,6 +59,15 @@ double** addslice2DArrayRows(double** array, double** slice, int ny, int start_r
    return array;
 }
 
+/* Function: create2DintArray
+ * ------------------------
+ * Creates a two-dimensional int pointer array in the heap
+ *
+ * rows:    number of rows in array
+ * columns: number of columns in array
+ *
+ * returns: empty 2D int pointer array.
+ */
 int** create2DintArray(int rows, int columns) {
    int** array;
    array = malloc(rows*sizeof(int*));
@@ -70,6 +77,14 @@ int** create2DintArray(int rows, int columns) {
    return array;
 }
 
+/* Function: create1DintArray
+ * ------------------------
+ * Creates a one-dimensional int pointer array in the heap
+ *
+ * columns: number of columns in array
+ *
+ * returns: empty 1D int pointer array.
+ */
 int* create1DintArray(int columns) {
    int* array;
    array = malloc(columns*sizeof(int));

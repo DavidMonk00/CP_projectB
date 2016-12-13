@@ -2,6 +2,17 @@
 	laplace
 This can then be simplified further, as for all points for which the equation must be solved, the charge density is zero. The boundary conditions for the simulation were Dirichlet as the value of the potential was fixed.
 
+In one dimension, the second derivative of V can be approximated by the following formula:
+	second derivative formula
+This can then be trivially extended to two-dimensions, yielding:
+	2D derivative
+and hence Laplace's equation can be written as:
+	approx laplace
+
+The second derivative of each point is therefore dependent on the value of the potential of its nearest neighbours and thus the entire simulation is a series of Nx*Ny coupled equations. By using matrix methods, such as the Jacobi or Gauss-Seidel, it would be possible to solve the equations, however an array of size Nx*Ny would be required. For a mesh of 1000x1000 points, which would be relatively small, the matrix would occupy 8TB of RAM which is simply not feasible. For this reason, the iterative successive over-relaxation method (SOR) was chosen. The method of operation for this algorithm is fairly simple. Firstly, the 'residual' at a given point is calculated:
+	residual formula
+and it is simply the amount by which the current value does not solve the equation [eq].
+
 
 
 In order to verify the accuracy of the method, a simple test case was considered. A single point in the centre of the mesh was given a positive potential, while the borders of the mesh were locked at zero. The mesh was then made large to allow for the outer boundaries to be approximated as infinity. The solution to Laplace's equation in such a scenario is a 1/r relation with distance from the source. As Fig. () and () show, the computed solution is very close to the analytic solution.

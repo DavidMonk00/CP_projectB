@@ -9,7 +9,7 @@
 #include "sor_multi.h"
 
 
-void writeFile(double** array, int nx, int ny, int order, int dust) {
+void writeFileEDM(double** array, int nx, int ny, int order, int dust) {
    time_t t = time(NULL);
    struct tm *tm = localtime(&t);
    char s[64];
@@ -20,6 +20,29 @@ void writeFile(double** array, int nx, int ny, int order, int dust) {
    } else {
       sprintf(ext, "_%d_%d.lf",nx,order);
    }
+   strcat(s,ext);
+   FILE *f = fopen(s, "w");
+   if (f == NULL) {
+      printf("Error opening file.");
+      exit(1);
+   }
+   int i; int j;
+   for (i = 0; i < nx; i++) {
+      for (j = 0; j < ny; j++) {
+         fprintf(f, "%0.15lf ", array[i][j]);
+      }
+      fprintf(f, "\n");
+   }
+   fclose(f);
+}
+
+void writeFileWire(double** array, int nx, int ny, int order, int dust) {
+   time_t t = time(NULL);
+   struct tm *tm = localtime(&t);
+   char s[64];
+   strftime(s, sizeof(s), "./data/cable/%Y%m%d%H%M%S", tm);
+   char ext[64];
+   sprintf(ext, "_%d_%d.lf",nx,order);
    strcat(s,ext);
    FILE *f = fopen(s, "w");
    if (f == NULL) {
@@ -64,7 +87,7 @@ void Wire(double tol, int order, int nx, int ny, int cores,int factor) {
 
       printf("Finished iteration %d\n", i);
    */
-   double** V_coarse = generateVArrayWireCoarse(nx/factor,ny/factor);
+   /*double** V_coarse = generateVArrayWireCoarse(nx/factor,ny/factor);
    int** boolarr_coarse = generateBoolArrayWireCoarse(nx/factor,ny/factor);
    MainReturn mr_coarse;
    mr_coarse.N = 0;
@@ -77,15 +100,17 @@ void Wire(double tol, int order, int nx, int ny, int cores,int factor) {
    printf("Generated fine array.\n");
    int** boolarr = generateBoolArrayWire(nx,ny);
 
-   printf("%s\n", "Grid built, running algorithm...");
+   printf("%s\n", "Grid built, running algorithm...");*/
+   double** V = generateVArrayWireCoarse(nx,ny);
+   int** boolarr = generateBoolArrayWireCoarse(nx,ny);
    MainReturn mr;
    mr.N = 0;
-   while (mr.N < 10) {
+   while (mr.N < 100) {
       mr = sor(V,boolarr,nx,ny,tol,cores);
       printf("Iterations: %d\n", mr.N);
    }
    printf("%s\n", "Algorithm complete. Writing to file...");
-   writeFile(V,nx,ny,order, 0);
+   writeFileWire(V,nx,ny,order, 0);
    free(V);
    free(boolarr);
 }
@@ -104,7 +129,7 @@ void EDM(double tol, int order, int scale, int cores, int dust) {
       printf("Total iterations: %d\n", mr.N);
    }
    printf("%s\n", "Algorithm complete. Writing to file...");
-   writeFile(V,nx,ny,order,dust);
+   writeFileEDM(V,nx,ny,order,dust);
    free(V);
    free(boolarr);
 }
@@ -133,7 +158,7 @@ void EDMRefining(double tol, int order, int scale, int cores, int dust) {
       printf("Total iterations: %d\n", mr.N);
    }
    printf("%s\n", "Algorithm complete. Writing to file...");
-   writeFile(V,nx,ny,order,dust);
+   writeFileEDM(V,nx,ny,order,dust);
    free(V);
    free(boolarr);
 }
@@ -160,7 +185,7 @@ int main(int argc, char **argv) {
    int order = (int)log10(tol);
    printf("Algorithm tolerance: 1e%d\n", order);
    int factor = 4;
-   //Wire(tol,order,scale,scale,cores,factor);
-   EDM(tol,order,scale,cores, dust);
+   Wire(tol,order,scale,scale,cores,factor);
+   //EDM(tol,order,scale,cores, dust);
    return 0;
 }

@@ -104,13 +104,28 @@ def main():
 
 
 def Plot2D():
-    f = [file for file in os.listdir("./data/edm/") if file.endswith(".lf")]
+    f = [file for file in os.listdir("./data/cable/") if file.endswith(".lf")]
     f.sort()
-    V = np.loadtxt("./data/edm/"+f[-1])
-    plt.imshow(V, interpolation='nearest')
-    plt.colorbar(orientation='horizontal')
+    V = np.loadtxt("./data/cable/"+f[-1])
+    plt.imshow(V, interpolation='nearest',cmap='hot')
+    plt.colorbar()#orientation='horizontal')
+    plt.show()
+    row = len(V)/2
+    l = len(V[row])
+    yprime = np.empty(l)
+    xprime = np.empty(l)
+    for i in range(l):
+        yprime[i] = (-V[row-2][i] + 8*V[row-1][i] - 8*V[row+1][i] + V[row+2][i])*l/(12)
+    for i in range(2,l-2):
+        xprime[i] = (-V[row][i-2] + 8*V[row][i-1] - 8*V[row][i+1] + V[row][i+2])*l/(12)
+    E = np.sqrt(yprime*yprime + xprime*xprime)
+    x = np.arange(0,l/2,1)
+    #plt.plot(V)
+    plt.plot(x,E[l/2:])
+    plt.plot(x,float(120)/x)
+    plt.xlim(0,200)
     plt.show()
 
 if (__name__ == '__main__'):
-    main()
+    #main()
     Plot2D()

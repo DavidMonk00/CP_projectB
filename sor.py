@@ -39,10 +39,15 @@ class DataAnalysis:
         f = open("./data/edm/"+self.filename)
         arr = []
         i = 0
+        prog = 0
         for line in f:
             if (i > self.rows/2 - 10 and i < self.rows/2 + 10):
                 arr.append([float(j) for j in line.strip().split(' ')])
+                prog +=1
+                print (str(float(prog)/20*100)+'%')
             i += 1
+            if (i > self.rows/2 + 10):
+                break
         self.V = 2*np.array(arr)
 
     def derivative(self):
@@ -59,20 +64,20 @@ class DataAnalysis:
         plt.xlim(0,l)
         plt.xlabel('x')
         plt.ylabel('Magnitude of Electric Field (V/m)')
-        plt.show()
+        #plt.show()
 
-    def homogenous(self):
+    def homogenous(self,tolerance):
         err_max_left = 0
         err_max_right = 0
         left, right = 0,0
         i = 0
         l = len(self.E)/2
-        while (err_max_left < self.tolerance or err_max_right < self.tolerance):
+        while (err_max_left < tolerance or err_max_right < tolerance):
             err_max_right = np.abs((self.E[l + i] - self.E[l])/self.E[l])
             err_max_left = np.abs((self.E[l - i] - self.E[l])/self.E[l])
-            if (err_max_right > self.tolerance):
+            if (err_max_right > tolerance):
                 right = i - 1
-            if (err_max_left > self.tolerance):
+            if (err_max_left > tolerance):
                 left = i - 1
             i += 1
         self.homogenousField = self.E[l-(left):l+(right)]
@@ -82,8 +87,10 @@ class DataAnalysis:
         self.getFileRows()
         self.loadFileToArray()
         self.derivative()
-        self.homogenous()
-        print "Length of field homogenous to "+str(self.tolerance)+": "+str(float(len(self.homogenousField))*10/(self.rows/9))+"mm"
+        t = [1e-10,1e-9,1e-8,1e-7,1e-6,1e-5,1e-4,1e-3,1e-2]
+        for i in t:
+            self.homogenous(i)
+            print "Length of field homogenous to "+str(i)+": "+str(float(len(self.homogenousField))*10/(self.rows/9))+"mm"
 
 def main():
     if (len(sys.argv) > 1):
@@ -91,9 +98,9 @@ def main():
     else:
         tol = 1e-6
     d = DataAnalysis(tol)
-    #d.doItAllForMe()
+    d.doItAllForMe()
 
-    d.getFilename()
+    '''d.getFilename()
     d.getFileRows()
     print 'Loading file...'
     d.loadFileToArray()
@@ -101,16 +108,16 @@ def main():
     d.derivative()
     d.homogenous()
     print "Length of field homogenous to "+str(d.tolerance)+": "+str(float(len(d.homogenousField))*10/(d.rows/9))+"mm"
-
+    '''
 
 def Plot2D():
-    f = [file for file in os.listdir("./data/cable/") if file.endswith(".lf")]
+    f = [file for file in os.listdir("./data/edm/") if file.endswith(".lf")]
     f.sort()
-    V = np.loadtxt("./data/cable/"+f[-1])
+    V = np.loadtxt("./data/edm/"+f[-1])
     plt.imshow(V, interpolation='nearest',cmap='hot')
-    plt.colorbar()#orientation='horizontal')
+    plt.colorbar(orientation='horizontal')
     plt.show()
-    row = len(V)/2
+    '''row = len(V)/2
     l = len(V[row])
     yprime = np.empty(l)
     xprime = np.empty(l)
@@ -124,8 +131,8 @@ def Plot2D():
     plt.plot(x,E[l/2:])
     plt.plot(x,float(120)/x)
     plt.xlim(0,200)
-    plt.show()
+    plt.show()'''
 
 if (__name__ == '__main__'):
-    #main()
-    Plot2D()
+    main()
+    #Plot2D()

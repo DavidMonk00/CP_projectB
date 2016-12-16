@@ -185,7 +185,7 @@ int main(int argc, char **argv) {
    int order = (int)log10(tol);
    printf("Algorithm tolerance: 1e%d\n", order);
    int factor = 4;
-   Wire(tol,order,scale,scale,cores,factor);
-   //EDM(tol,order,scale,cores, dust);
+   //Wire(tol,order,scale,scale,cores,factor);
+   EDM(tol,order,scale,cores, dust);
    return 0;
 }

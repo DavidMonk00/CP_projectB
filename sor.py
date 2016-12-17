@@ -48,7 +48,7 @@ class DataAnalysis:
             i += 1
             if (i > self.rows/2 + 10):
                 break
-        self.V = 2*np.array(arr)
+        self.V = 2*np.array(arr)/1000
 
     def derivative(self):
         row = len(self.V)/2
@@ -62,9 +62,10 @@ class DataAnalysis:
         self.E = np.sqrt(yprime*yprime + xprime*xprime)
         plt.plot(self.E)
         plt.xlim(0,l)
-        plt.xlabel('x')
-        plt.ylabel('Magnitude of Electric Field (V/m)')
-        #plt.show()
+        plt.ylim(0,2)
+        plt.xlabel('x (mm/100)')
+        plt.ylabel('Magnitude of Electric Field (MV/m)')
+        plt.show()
 
     def homogenous(self,tolerance):
         err_max_left = 0

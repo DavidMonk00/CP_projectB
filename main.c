@@ -60,47 +60,6 @@ void writeFileWire(double** array, int nx, int ny, int order, int dust) {
 }
 
 void Wire(double tol, int order, int nx, int ny, int cores,int factor) {
-   /*int renorms = 2;
-   Mesh meshes[renorms];
-   double divisor = pow(factor,renorms);
-
-   meshes[0].V = generateVArrayWireCoarse(nx/divisor,ny/divisor);
-   meshes[0].boolarr = generateBoolArrayWireCoarse(nx/divisor,ny/divisor);
-
-   printf("Initial array made.\n");
-
-   for (int i = 1; i < renorms; i++) {
-      MainReturn mr_coarse;
-      mr_coarse.N = 0;
-      divisor = pow(factor,renorms-(i-1));
-      printf("Starting iteration %d\n", i);
-      while (mr_coarse.N < 10) {
-         mr_coarse = sor(meshes[i-1].V,meshes[i-1].boolarr,nx/divisor,ny/divisor,1e-5,cores);
-         printf("Iterations: %d\n", mr_coarse.N);
-      }
-
-      double divisor = pow(factor,renorms-i);
-      printf("%f\n", divisor);
-      meshes[i].V = generateFineVArray(meshes[i-1].V,nx/divisor,ny/divisor,factor);
-      printf("Generated fine v array\n");
-      meshes[i].boolarr = generateBoolArrayWire(nx/divisor,ny/divisor);
-
-      printf("Finished iteration %d\n", i);
-   */
-   /*double** V_coarse = generateVArrayWireCoarse(nx/factor,ny/factor);
-   int** boolarr_coarse = generateBoolArrayWireCoarse(nx/factor,ny/factor);
-   MainReturn mr_coarse;
-   mr_coarse.N = 0;
-   while (mr_coarse.N < 10) {
-      mr_coarse = sor(V_coarse,boolarr_coarse,nx/factor,ny/factor,1e-3,cores);
-      printf("Iterations: %d\n", mr_coarse.N);
-   }
-   printf("Coarse solution found.\n");
-   double** V = generateFineVArray(V_coarse, nx, ny, factor);
-   printf("Generated fine array.\n");
-   int** boolarr = generateBoolArrayWire(nx,ny);
-
-   printf("%s\n", "Grid built, running algorithm...");*/
    double** V = generateVArrayWireCoarse(nx,ny);
    int** boolarr = generateBoolArrayWireCoarse(nx,ny);
    MainReturn mr;

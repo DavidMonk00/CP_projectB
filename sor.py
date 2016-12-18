@@ -44,7 +44,7 @@ class DataAnalysis:
             if (i > self.rows/2 - 10 and i < self.rows/2 + 10):
                 arr.append([float(j) for j in line.strip().split(' ')])
                 prog +=1
-                print (str(float(prog)/20*100)+'%')
+                #print (str(float(prog)/20*100)+'%')
             i += 1
             if (i > self.rows/2 + 10):
                 break
@@ -65,7 +65,7 @@ class DataAnalysis:
         plt.ylim(0,2)
         plt.xlabel('x (mm/100)')
         plt.ylabel('Magnitude of Electric Field (MV/m)')
-        plt.show()
+        #plt.show()
 
     def homogenous(self,tolerance):
         err_max_left = 0
@@ -84,7 +84,7 @@ class DataAnalysis:
         self.homogenousField = self.E[l-(left):l+(right)]
 
     def doItAllForMe(self):
-        self.getLargestFileName()
+        self.getFilename()
         self.getFileRows()
         self.loadFileToArray()
         self.derivative()

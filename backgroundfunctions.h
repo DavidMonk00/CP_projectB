@@ -91,6 +91,82 @@ int* create1DintArray(int columns) {
    return array;
 }
 
+/* Function: writeFileEDM
+ * ------------------------
+ * Writes array to file. NOTE: will not create directory if
+ * it is not present asnw ill instead through an error.
+ *
+ * array:   array to be written
+ * nx       number of rows
+ * ny:      number of columns
+ * order:   tolerance of convergence
+ * dust:    boolean, 1 if dust was added to intitail array
+ *
+ * returns: void
+ */
+void writeFileEDM(double** array, int nx, int ny, int order, int dust) {
+   time_t t = time(NULL);
+   struct tm *tm = localtime(&t);
+   char s[64];
+   strftime(s, sizeof(s), "./data/edm/%Y%m%d%H%M%S", tm);
+   char ext[64];
+   if (dust) {
+      sprintf(ext, "_dust_%d_%d.lf",nx,order);
+   } else {
+      sprintf(ext, "_%d_%d.lf",nx,order);
+   }
+   strcat(s,ext);
+   FILE *f = fopen(s, "w");
+   if (f == NULL) {
+      printf("Error opening file.");
+      exit(1);
+   }
+   int i; int j;
+   for (i = 0; i < nx; i++) {
+      for (j = 0; j < ny; j++) {
+         fprintf(f, "%0.15lf ", array[i][j]);
+      }
+      fprintf(f, "\n");
+   }
+   fclose(f);
+}
+
+/* Function: writeFileWire
+ * ------------------------
+ * Writes array to file. NOTE: will not create directory if
+ * it is not present asnw ill instead through an error.
+ *
+ * array:   array to be written
+ * nx       number of rows
+ * ny:      number of columns
+ * order:   tolerance of convergence
+ * dust:    boolean, 1 if dust was added to intitail array
+ *
+ * returns: void
+ */
+void writeFileWire(double** array, int nx, int ny, int order, int dust) {
+   time_t t = time(NULL);
+   struct tm *tm = localtime(&t);
+   char s[64];
+   strftime(s, sizeof(s), "./data/cable/%Y%m%d%H%M%S", tm);
+   char ext[64];
+   sprintf(ext, "_%d_%d.lf",nx,order);
+   strcat(s,ext);
+   FILE *f = fopen(s, "w");
+   if (f == NULL) {
+      printf("Error opening file.");
+      exit(1);
+   }
+   int i; int j;
+   for (i = 0; i < nx; i++) {
+      for (j = 0; j < ny; j++) {
+         fprintf(f, "%0.15lf ", array[i][j]);
+      }
+      fprintf(f, "\n");
+   }
+   fclose(f);
+}
+
 LoopParams* getLoopParams(int** boolarr, int nx, int ny, int breaks) {
    int** loopstarts = create2DintArray(nx, breaks + 1);
    int** loopends = create2DintArray(nx, breaks + 1);

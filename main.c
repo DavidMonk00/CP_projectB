@@ -6,59 +6,23 @@
 #include "structs.h"
 #include "backgroundfunctions.h"
 #include "arrayinits.h"
-#include "sor_multi.h"
+#include "sor.h"
 
-
-void writeFileEDM(double** array, int nx, int ny, int order, int dust) {
-   time_t t = time(NULL);
-   struct tm *tm = localtime(&t);
-   char s[64];
-   strftime(s, sizeof(s), "./data/edm/%Y%m%d%H%M%S", tm);
-   char ext[64];
-   if (dust) {
-      sprintf(ext, "_dust_%d_%d.lf",nx,order);
-   } else {
-      sprintf(ext, "_%d_%d.lf",nx,order);
-   }
-   strcat(s,ext);
-   FILE *f = fopen(s, "w");
-   if (f == NULL) {
-      printf("Error opening file.");
-      exit(1);
-   }
-   int i; int j;
-   for (i = 0; i < nx; i++) {
-      for (j = 0; j < ny; j++) {
-         fprintf(f, "%0.15lf ", array[i][j]);
-      }
-      fprintf(f, "\n");
-   }
-   fclose(f);
-}
-
-void writeFileWire(double** array, int nx, int ny, int order, int dust) {
-   time_t t = time(NULL);
-   struct tm *tm = localtime(&t);
-   char s[64];
-   strftime(s, sizeof(s), "./data/cable/%Y%m%d%H%M%S", tm);
-   char ext[64];
-   sprintf(ext, "_%d_%d.lf",nx,order);
-   strcat(s,ext);
-   FILE *f = fopen(s, "w");
-   if (f == NULL) {
-      printf("Error opening file.");
-      exit(1);
-   }
-   int i; int j;
-   for (i = 0; i < nx; i++) {
-      for (j = 0; j < ny; j++) {
-         fprintf(f, "%0.15lf ", array[i][j]);
-      }
-      fprintf(f, "\n");
-   }
-   fclose(f);
-}
-
+/* Function: Wire
+ * ------------------------
+ * Initialises then runs the algorithm for the coaxial
+ * cable example
+ *
+ * tol:     tolerance to which the algorithm will run
+ * order:   order of the tolerance
+ * nx       number of rows
+ * ny:      number of columns
+ * cores:   number of cores to use
+ * factor:  factor by which to reduce the mesh for initial
+ *          seed
+ *
+ * returns: void
+ */
 void Wire(double tol, int order, int nx, int ny, int cores,int factor) {
    double** V = generateVArrayWireCoarse(nx,ny);
    int** boolarr = generateBoolArrayWireCoarse(nx,ny);
@@ -74,6 +38,20 @@ void Wire(double tol, int order, int nx, int ny, int cores,int factor) {
    free(boolarr);
 }
 
+/* Function: EDM
+ * ------------------------
+ * Initialises then runs the algorithm for the electron
+ * dipole moment experiemt simulation.
+ *
+ * tol:     tolerance to which the algorithm will run
+ * order:   order of the tolerance
+ * scale:   scaling factor for grid
+ * cores:   number of cores to use
+ * dust:    boolean for the addition of dust to the intial
+ *          grid
+ *
+ * returns: void
+ */
 void EDM(double tol, int order, int scale, int cores, int dust) {
    int nx = 9*scale;
    int ny = 32*scale;
@@ -93,6 +71,21 @@ void EDM(double tol, int order, int scale, int cores, int dust) {
    free(boolarr);
 }
 
+/* Function: EDMRefining
+ * ------------------------
+ * Initialises then runs the algorithm for the electron
+ * dipole moment experiemt simulation. Extension to original
+ * EMD function by creating a coarse seed for the mesh
+ *
+ * tol:     tolerance to which the algorithm will run
+ * order:   order of the tolerance
+ * scale:   scaling factor for grid
+ * cores:   number of cores to use
+ * dust:    boolean for the addition of dust to the intial
+ *          grid
+ *
+ * returns: void
+ */
 void EDMRefining(double tol, int order, int scale, int cores, int dust) {
    int coarse_scale = scale/4;
    int nx_coarse = 9 * coarse_scale;
@@ -127,15 +120,30 @@ int main(int argc, char **argv) {
    int cores;
    int scale;
    int dust;
+   int foo = 1;
    if (argc > 1) {
-      scale = atoi(argv[1]);
-      tol = atof(argv[2]);
-      if (atoi(argv[3])) {
-         dust = 1;
+      if(!strcmp(argv[1], "edm")) {
+         foo = 1;
+      } else if (!strcmp(argv[1], "cable")){
+         foo = 0;
       } else {
-         dust = 0;
+         printf("ERROR: Incorrect option selected for mesh type.\nPlease choose either 'edm' or 'cable'\n");
+         exit(1);
       }
-      cores = atoi(argv[4]);
+      scale = atoi(argv[2]);
+      tol = atof(argv[3]);
+      if (tol >= 1) {
+         printf("ERROR: Tolerance must be less than 1.\nRecommended tolerance is 1e-10.\n");
+         exit(1);
+      }
+      if (argc > 4) {
+         if (atoi(argv[4])) {
+            dust = 1;
+         } else {
+            dust = 0;
+         }
+      }
+      cores = atoi(argv[5]);
    } else {
       scale = 10;
       tol = 1e-8;
@@ -144,7 +152,10 @@ int main(int argc, char **argv) {
    int order = (int)log10(tol);
    printf("Algorithm tolerance: 1e%d\n", order);
    int factor = 4;
-   //Wire(tol,order,scale,scale,cores,factor);
-   EDM(tol,order,scale,cores, dust);
+   if (foo) {
+      EDM(tol,order,scale,cores, dust);
+   } else {
+      Wire(tol,order,scale,scale,cores,factor);
+   }
    return 0;
 }

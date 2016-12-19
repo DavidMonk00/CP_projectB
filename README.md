@@ -25,8 +25,15 @@ Example:
 
 ./compile_run.sh edm 100 1e-12 0
 
+
 ---Running the code---
 
 Linux:
    1. Unpack into directory
-   2. run './compile_run.sh [options]'
+   2. run ./compile_run.sh [options]
+
+Windows:
+   1. Unpack into directory
+   2. Open Cygwin window and navigate to directory
+   3. Manually compile main.c with the options as seen in compile_run.sh
+   4. Run main.o with all 5 options

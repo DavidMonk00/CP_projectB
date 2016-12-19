@@ -58,8 +58,8 @@ int** generateBoolArrayWireCoarse(int nx, int ny) {
       boolarr[nx-1][i] = 1;
    }
    int j;
-   for (i = 500*nx/1000; i < 500*nx/1000 + 1; i++) {
-      for (j = 500*ny/1000; j < 500*ny/1000 + 1; j++) {
+   for (i = nx/10; i < 9*nx/10 + 1; i++) {
+      for (j = ny/10; j < 9*ny/10 + 1; j++) {
          boolarr[i][j] = 1;
       }
    }
@@ -99,8 +99,8 @@ double** generateVArrayWire(int nx, int ny) {
 double** generateVArrayWireCoarse(int nx, int ny) {
    double** V = create2DArray(nx,ny);
    int j; int i;
-   for (i = 500*nx/1000; i < 500*nx/1000 + 1; i++) {
-      for (j = 500*ny/1000; j < 500*ny/1000 + 1; j++) {
+   for (i = nx/10; i < 9*nx/10 + 1; i++) {
+      for (j = ny/10; j < 9*ny/10 + 1; j++) {
          V[i][j] = 1;
       }
    }

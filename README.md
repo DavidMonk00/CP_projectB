@@ -2,7 +2,7 @@
 
 This project is written primarily in C, with analysis written in Python.
 
----Options for program---
+#---Options for program---
 
 main.o must be proceeded by 5 options in order for the code to run.
 
@@ -26,7 +26,7 @@ Example:
 ./compile_run.sh edm 100 1e-12 0
 
 
----Running the code---
+#---Running the code---
 
 Linux:
    1. Unpack into directory

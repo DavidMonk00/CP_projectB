@@ -37,3 +37,4 @@ Windows:
    2. Open Cygwin window and navigate to directory
    3. Manually compile main.c with the options as seen in compile_run.sh
    4. Run main.o with all 5 options
+   5. run python sor.py
